@@ -327,7 +327,7 @@ $$`
 MTI.Real.lintegral_liminf_le
 ```
 
-:::::theoremBox
+:::::theoremBox "Fatou's Lemma (limsup Version)" (ja := "ファトゥの補題（limsup 版）")
 ::::localized
 Let $`f_0, f_1, \dots : \mathbb{R} \to [0,\infty]` be measurable functions, and let
 $`g : \mathbb{R} \to [0,\infty]` satisfy $`f_n \le g` for all $`n`.

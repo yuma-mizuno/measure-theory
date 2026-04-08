@@ -1,0 +1,10 @@
+{
+  "\\len": "\\operatorname{len}",
+  "\\Img": "\\operatorname{Im}",
+  "\\Simp": "\\operatorname{Simp}",
+  "\\Measure": "\\operatorname{Measure}",
+  "\\approxFun": "\\operatorname{approx}",
+  "\\gen": "\\mathsf{gen}",
+  "\\dgen": "\\mathsf{d}\\text{-}\\mathsf{gen}",
+  "\\borel": "\\mathsf{borel}"
+}

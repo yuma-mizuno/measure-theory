@@ -1,0 +1,9 @@
+digraph "import_graph" {
+  "MeasureTheory.Measure.LebesgueDoc.DeclStore" [shape=ellipse];
+  "MeasureTheory.Measure.LebesgueDoc.Config" [shape=ellipse];
+  "MeasureTheory.Measure.LebesgueDoc.Assets" [style=filled, fillcolor="#e0e0e0", shape=ellipse];
+  "MeasureTheory.Measure.LebesgueDoc.Support" [shape=house];
+  "MeasureTheory.Measure.LebesgueDoc.Assets" -> "MeasureTheory.Measure.LebesgueDoc.Support";
+  "MeasureTheory.Measure.LebesgueDoc.Config" -> "MeasureTheory.Measure.LebesgueDoc.Support";
+  "MeasureTheory.Measure.LebesgueDoc.DeclStore" -> "MeasureTheory.Measure.LebesgueDoc.Support";
+}

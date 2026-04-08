@@ -1,0 +1,43 @@
+name = "MeasureTheory"
+version = "0.1.0"
+defaultTargets = ["MeasureTheory"]
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+maxSynthPendingDepth = 3
+weak.linter.mathlibStandardSet = true
+weak.linter.style.header = true
+weak.linter.checkInitImports = true
+weak.linter.allScriptsDocumented = true
+weak.linter.pythonStyle = true
+weak.linter.style.longFile = 1500
+weak.linter.hashCommand = false
+
+[[require]]
+name = "verso"
+git = "https://github.com/leanprover/verso.git"
+rev = "v4.28.0"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.28.0"
+
+[[lean_lib]]
+name = "MeasureTheory"
+
+[[lean_lib]]
+name = "DocGen"
+
+[[lean_exe]]
+name = "measure-theory"
+root = "Main"
+
+[[lean_exe]]
+name = "lebesgue-doc"
+root = "MeasureTheory.Measure.LebesgueDoc.Main"
+
+[[lean_exe]]
+name = "lebesgue-doc-ja"
+root = "MeasureTheory.Measure.LebesgueDoc.MainJa"

@@ -1,0 +1,1261 @@
+\documentclass{article}
+
+% \usepackage{luatexja}
+
+\usepackage{rotating}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amscd}
+\usepackage[mathscr]{eucal}
+\usepackage{mathtools}
+\usepackage{url}
+\usepackage[colorlinks = true,linkcolor = blue,urlcolor  = blue,citecolor = blue,anchorcolor = blue,linktocpage=true
+]{hyperref}
+\usepackage{amsthm}
+
+\usepackage{stmaryrd}
+\usepackage{bm}
+
+\allowdisplaybreaks[2]
+
+\usepackage[inline]{enumitem}
+\setlist[enumerate,1]{label=(\arabic*),ref=\arabic*}
+\setlist[itemize,1]{itemsep=0pt}
+\usepackage{setspace}
+\usepackage[math]{cellspace}
+\setlength{\cellspacetoplimit}{2pt}
+\setlength{\cellspacebottomlimit}{2pt}
+
+% \newtheorem{theorem}{Theorem}[section]
+% \newtheorem{corollary}[theorem]{Corollary}
+% \newtheorem{lemma}[theorem]{Lemma}
+
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{exercise}[theorem]{Exercise}
+
+\DeclareMathOperator{\len}{len}
+\DeclareMathOperator{\Img}{Im}
+\DeclareMathOperator{\Simp}{Simp}
+\DeclareMathOperator{\Measure}{Measure}
+\DeclareMathOperator{\approxFun}{approx}
+\DeclareMathOperator{\gen}{\mathsf{gen}}
+\DeclareMathOperator{\dgen}{\mathsf{d-gen}}
+\DeclareMathOperator{\borel}{\mathsf{borel}}
+\allowdisplaybreaks
+
+
+\begin{document}
+
+\title{Measure Theory and Integration}
+\author{Yuma Mizuno}
+\maketitle
+
+\section{Preliminaries}
+
+\begin{definition}[Sequence]
+  Let $X$ be a set.
+  A \emph{sequence} on $X$ is a function $a : \mathbb{N} \to X$.
+  The $n$-th term of the sequence $a$ is denoted by $a_n$, i.e., $a_n \coloneqq a(n)$.
+\end{definition}
+
+\begin{definition}[Extended nonnegative real numbers]
+  We define 
+  \begin{equation*}
+    [0, \infty] \coloneqq \{ x \in \mathbb{R} \mid x \geq 0 \} \sqcup \{ \infty \}.
+  \end{equation*}
+  We extend the order and the addition on the reals to $[0, \infty]$ by
+  \begin{equation*}
+    a \leq \infty,\quad
+    a + \infty = \infty + a = \infty
+  \end{equation*}
+  for any $a \in [0, \infty]$.
+  For $a \in \mathbb{R}$,
+  we define $a^+ \coloneqq \max (a, 0) \in [0, \infty]$.
+\end{definition}
+
+\begin{proposition}[The ``$\varepsilon$-technique'']
+  Let $a,b\in[0,\infty]$.
+  To prove $a\le b$, it suffices to show that 
+  $a\le b+\varepsilon$
+  for any positive real $\varepsilon > 0$.
+\end{proposition}
+
+\begin{proposition}[Countable decomposition of $\varepsilon$]
+  Let $\varepsilon > 0$.
+  There is a sequence $\varepsilon' : \mathbb{N} \to \mathbb{R}$ such that
+  $\varepsilon'_n >0$ for all $n \in \mathbb{N}$ and
+  \begin{equation*}
+    \sum_{n \in \mathbb{N}} \varepsilon'_n < \varepsilon.
+  \end{equation*}
+\end{proposition}
+
+\section{Measure and integral on $\mathbb{R}$}
+
+\subsection{Measure on $\mathbb{R}$}
+
+\begin{definition}[Lebesgue measure]
+  Let $A \subseteq \mathbb{R}$.
+  The \emph{Lebesgue (outer) measure} of $A$ is defined by
+  \begin{equation*}
+    m (A) \coloneqq 
+      \inf_{a : \mathbb{N} \to \mathbb{R},\, b : \mathbb{N} \to \mathbb{R},\, 
+        A \subseteq \bigcup_{n} (a_n, b_n)}
+      \sum_{n \in \mathbb{N}} (b_n - a_n)^+ \ \in \ [0, \infty].
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}[Measure of closed intervals]
+  Let $a, b \in \mathbb{R}$. We have 
+  \begin{equation*}
+    m([a, b]) = (b - a)^+.
+  \end{equation*}
+\end{proposition}
+
+\begin{proposition}[$m$ is an outer measure]\leavevmode
+  \begin{enumerate}
+    \item $m(\emptyset) = 0$.
+    \item For $A, B \subseteq \mathbb{R}$ with $A \subseteq B$, we have $m(A) \leq m(B)$.
+    \item For $A_0, A_1, \dots \subseteq \mathbb{R}$, we have 
+      \begin{equation*}
+        m\left( \bigcup_{n \in \mathbb{N}} A_n \right) 
+          \leq \sum_{n \in \mathbb{N}} m(A_n).
+      \end{equation*}
+  \end{enumerate}
+\end{proposition}
+
+\begin{remark}
+  Let $A, B \subseteq \mathbb{R}$. It is known that, 
+  even if $A \cap B = \emptyset$, it does not necessarily imply that
+  $m(A \cup B) = m(A) + m(B)$.
+  \end{remark}
+
+% \begin{proposition}[Carath\'eodory's criterion for open half-lines]
+%   Let $a \in \mathbb{R}$ and $B \subseteq \mathbb{R}$.
+%   We have
+%   \begin{equation*}
+%     m(B) = m(B_{\leq a}) + m(B_{> a})
+%   \end{equation*}
+%   where 
+%   \begin{equation*}
+%     B_{\leq a} \coloneqq \{ x \in B \mid x \leq a \}, \quad 
+%     B_{> a} \coloneqq \{ x \in B \mid x > a \}.
+%   \end{equation*}
+% \end{proposition}
+
+\subsection{Measurable sets on $\mathbb{R}$}
+
+\begin{definition}[Borel measurable set]
+  We define inductively the notion of a subset $A \subseteq \mathbb{R}$ being 
+  \emph{Borel measurable} as follows:
+  \begin{enumerate}
+    \item For $a \in \mathbb{R}$, the interval $(a,\infty]$ is Borel measurable.
+    \item The empty set $\emptyset$ is Borel measurable.
+    \item For a Borel measurable set $A$, its complement $A^c$ is Borel measurable.
+    \item For a sequence of Borel measurable sets $A_0, A_1, \dots$, 
+      the union $\bigcup_{n \in \mathbb{N}} A_n$ is Borel measurable.
+  \end{enumerate}
+\end{definition}
+
+In what follows, measurable sets on $\mathbb{R}$ will mean Borel measurable sets.
+
+\begin{proposition}[Induction principle of Borel measurable sets]
+  Let $P(A)$ be a property on measurable sets $A \subseteq \mathbb{R}$.
+  Suppose that the following conditions hold:
+  \begin{enumerate}
+    \item For any $a \in \mathbb{R}$, we have $P((a, \infty])$.
+    \item We have $P(\emptyset)$.
+    \item For any measurable set $A \subseteq \mathbb{R}$, we have $P(A)$ implies $P(A^c)$.
+    \item For any sequence of measurable sets $A_0, A_1, \dots \subseteq \mathbb{R}$,
+      we have $\forall n \in \mathbb{N}, P(A_n)$ implies $P\left(\bigcup_{n \in \mathbb{N}} A_n\right)$.  
+  \end{enumerate}
+  Then any measurable set $A \subseteq \mathbb{R}$ satisfies $P(A)$.
+\end{proposition}
+
+\begin{definition}
+  We say that a set $A \subseteq \mathbb{R}$ satisfies 
+  the Carath\'eodory's criterion if 
+  for any $B \subseteq \mathbb{R}$, we have 
+  \begin{equation*}
+    m(B) = m(B \cap A) + m(B \setminus A).
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}
+  Let $A \subseteq \mathbb{R}$.
+  If $A$ is measurable,
+  then $A$ satisfies the Carath\'eodory's criterion.
+\end{proposition}
+
+% \begin{proposition}
+%   Let $A_0, A_1, \dots \subseteq \mathbb{R}$ be a sequence of pairwise disjoint sets.
+%   Suppose that each $A_n$ satisfies the Carath\'eodory's criterion.
+%   We have 
+%   \begin{equation*}
+%     m\left( \bigcup_{n \in \mathbb{N}} A_n \right) 
+%       = \sum_{n \in \mathbb{N}} m(A_n).
+%   \end{equation*}
+% \end{proposition}
+
+\begin{proposition}[Countable additivity]
+  Let $A_0, A_1, \dots \subseteq \mathbb{R}$ be a sequence of pairwise disjoint sets.
+  Suppose that each $A_n$ is measurable.
+  We have 
+  \begin{equation*}
+    m\left( \bigcup_{n \in \mathbb{N}} A_n \right) 
+      = \sum_{n \in \mathbb{N}} m(A_n).
+  \end{equation*}
+\end{proposition}
+
+\begin{proposition}[Measure of arbitrary sets via measurable sets]
+  Let $A \subseteq \mathbb{R}$.
+  We have 
+  \begin{equation*}
+    m(A) = \inf_{\substack{B \subseteq \mathbb{R},\\ \text{$B$ is measurable},\, A \subseteq B}} m(B).
+  \end{equation*}
+\end{proposition}
+
+\begin{proposition}
+  Let $A \subseteq \mathbb{R}$.
+  There exists a measurable set $B \subseteq \mathbb{R}$
+  such that $A \subseteq B$ and $m(A) = m(B)$.
+\end{proposition}
+
+\begin{proposition}[Continuity of measure from below]
+  Let $A_0, A_1, \dots \subseteq \mathbb{R}$. 
+  Suppose that the following conditions hold:
+  \begin{enumerate}
+    \item For any $n \in \mathbb{N}$, the set $A_n$ is measurable.
+    \item For any $i, j \in \mathbb{N}$ with $i \leq j$, we have $A_i \subseteq A_j$.
+  \end{enumerate}
+  Then we have
+  \begin{equation*}
+    m\left( \bigcup_{n \in \mathbb{N}} A_n \right) = \sup_{n \in \mathbb{N}} m(A_n).
+  \end{equation*}
+\end{proposition}
+
+% \begin{exercise}
+%   Let $A, B \subseteq \mathbb{R}$ be measurable sets, and let $a,b\in\mathbb{R}$.
+%   Compute the measures of the following sets.
+%   \begin{enumerate}
+%     % \item $\emptyset$, $\mathbb{R}$.
+%     \item $(a, b)$, $[a, b]$, $(a, b]$, $[a, b)$,
+%       $(-\infty, a)$, $(-\infty, a]$, $(a, \infty)$, $[a, \infty)$, $\{a\}$.
+%     % \item $A^c$, $A \cup B$, $A \cap B$, $A \setminus B$.
+%   \end{enumerate}
+% \end{exercise}
+
+\subsection{Integral of nonnegative functions}
+
+\begin{definition}[Simple function]
+  A function $f : \mathbb{R} \to [0, \infty]$ is called \emph{simple} if
+  the following conditions hold:
+  \begin{enumerate}
+    \item $f^{-1} \{x\}$ is measurable for any $x \in [0, \infty]$.
+    \item The image of $f$ is a finite set.
+  \end{enumerate}
+\end{definition}
+
+
+\begin{definition}[Integral of simple functions]
+  Let $f : \mathbb{R} \to [0, \infty]$ be a simple function.
+  We define the integral of $f$ by
+  \begin{equation*}
+    \Simp \int_{x \in \mathbb{R}} f(x) \, dx 
+      \coloneqq \sum_{y \in \Img (f)}
+        y \cdot m(f^{-1}\{y\}) \quad \in [0, \infty].
+  \end{equation*}
+\end{definition}
+
+\begin{definition}[Lower Lebesgue integral]
+  Let $f : \mathbb{R} \to [0, \infty]$ be a function.
+  We define the \emph{lower Lebesgue integral} of $f$ by
+  \begin{equation*}
+    \underline{\int}_{x \in \mathbb{R}} f(x) \, dx 
+      \coloneqq \sup_{\substack{g : \mathbb{R} \to [0, \infty],\\ \text{$g$ is simple},\, g \leq f}}
+        \Simp \int_{x \in \mathbb{R}} g(x) \, dx \quad \in [0, \infty].
+  \end{equation*}
+\end{definition}
+
+\begin{definition}[Measurable function]
+  Let $f : \mathbb{R} \to [0, \infty]$.
+  We say that $f$ is \emph{measurable} if
+  the set $f^{-1} (a, \infty] = \{ x \mid a < f(x) \}$ is measurable
+  for any $a \in [0, \infty]$.
+\end{definition}
+
+% \begin{exercise}
+%   Let $f : \mathbb{R} \to [0, \infty]$ be a function.
+%   The following conditions are equivalent:
+%   \begin{enumerate}
+%     \item $f$ is measurable.
+%     \item For any $a \in [0, \infty]$, the set $f^{-1} (a, \infty)$ is measurable.
+%     \item For any $a \in [0, \infty]$, the set $f^{-1} [a, \infty)$ is measurable.
+%   \end{enumerate}
+% \end{exercise}
+
+% \begin{exercise}
+%   Let $f : \mathbb{R} \to [0, \infty]$ be a measurable function.
+%   Let $a ,b \in [0, \infty]$.
+%   Show that the following sets are measurable:
+%   \begin{enumerate}
+%     \item $f^{-1} (a, b)$, $f^{-1} [a, b]$, $f^{-1} (a, b]$, $f^{-1} [a, b)$,
+%       $f^{-1} (a, \infty)$, $f^{-1} [a, \infty)$.
+%   \end{enumerate}
+% \end{exercise}
+
+For functions $f, g : \mathbb{R} \to [0, \infty]$,
+we write $f \leq g$ if $f(x) \leq g(x)$ for any $x \in \mathbb{R}$.
+
+\begin{theorem}[Monotone convergence theorem]
+  \label{theorem:monotone convergence}
+  Let $f_0, f_1, \dots : \mathbb{R} \to [0, \infty]$.
+  Suppose that the following conditions hold:
+  \begin{enumerate}
+    \item For any $n \in \mathbb{N}$, the function $f_n$ is measurable.
+    \item For any $i, j \in \mathbb{N}$ with $i \leq j$, we have $f_i \leq f_j$.
+  \end{enumerate}
+  Then we have
+  \begin{equation*}
+    \underline{\int}_{x \in \mathbb{R}} \sup_{n \in \mathbb{N}} f_n (x) \, dx
+      = \sup_{n \in \mathbb{N}} \underline{\int}_{x \in \mathbb{R}} f_n (x) \, dx.
+  \end{equation*}
+\end{theorem}
+
+\begin{proposition}
+  Take a bijection $q : \mathbb{N} \to \mathbb{Q}_{\ge 0}$.
+  For a function $f : \mathbb{R} \to [0, \infty]$
+  and $n \in \mathbb{N}$, we define $\approxFun_n f : \mathbb{R} \to [0, \infty]$ by
+  \begin{align*}
+    (\approxFun_n f)(x) \coloneqq \max_{\substack{0 \le i < n \\ q_i \le f(x)}} q_i.
+  \end{align*}
+  Then we have the following properties:
+  \begin{enumerate}
+    \item For any $n$, the function $\approxFun_n f$ is simple.
+    \item For any $i,j$ with $i \leq j$, we have
+      $\approxFun_i f \leq \approxFun_j f$.
+    \item For any $x \in \mathbb{R}$, we have $\sup_{n \in \mathbb{N}} ((\approxFun_n f) (x)) = f (x)$.
+  \end{enumerate}
+\end{proposition}
+
+\begin{proposition}
+  Let $f, g : \mathbb{R} \to [0, \infty]$ be measurable functions.
+  We have 
+  \begin{equation*}
+    \underline{\int}_{x \in \mathbb{R}} f(x) + g(x) \, dx
+      = \underline{\int}_{x \in \mathbb{R}} f(x) \, dx
+        + \underline{\int}_{x \in \mathbb{R}} g(x) \, dx.
+  \end{equation*}
+  If in addition $g \leq f$, we have 
+  \begin{equation*}
+    \underline{\int}_{x \in \mathbb{R}} f(x) - g(x) \, dx
+      = \underline{\int}_{x \in \mathbb{R}} f(x) \, dx
+        - \underline{\int}_{x \in \mathbb{R}} g(x) \, dx.
+  \end{equation*}
+\end{proposition}
+
+% \begin{theorem}[Monotone convergence theorem (decreasing version)]
+%   \label{theorem:monotone convergence}
+%   Let $f_0, f_1, \dots : \mathbb{R} \to [0, \infty]$ be
+%   a sequence of measurable functions.
+%   Suppose that $f_j \geq f_i$ if $i \leq j$.
+%   Suppose in addition that 
+%   \begin{equation*}
+%     \underline{\int}_{x \in \mathbb{R}} f_0 (x) \, dx < \infty.
+%   \end{equation*}
+%   Then we have
+%   \begin{equation*}
+%     \underline{\int}_{x \in \mathbb{R}} \inf_{n \in \mathbb{N}} f_n (x) \, dx
+%       = \inf_{n \in \mathbb{N}} \underline{\int}_{x \in \mathbb{R}} f_n (x) \, dx.
+%   \end{equation*}
+% \end{theorem}
+
+\begin{definition}
+For a sequence $a : \mathbb{N} \to [0, \infty]$,
+the \emph{limit infimum} and the
+\emph{limit supremum} of $a$ are defined by
+\begin{align*}
+  \liminf_{n \to \infty} a_n \coloneqq 
+  \sup_{n \in \mathbb{N}} \inf_{i \geq n} a_i,\quad
+  \limsup_{n \to \infty} a_n \coloneqq
+  \inf_{n \in \mathbb{N}} \sup_{i \geq n} a_i.
+    % \\
+  % \sup \, \{ c \in [0, \infty] \mid c 
+    % \leq a_n \text{ for all sufficiently large $n$} \}. 
+    % \\
+  % \limsup_{n \to \infty} a_n &\coloneqq \inf \, \{ c \in [0, \infty] \mid a_n 
+    % \leq c \text{ for all sufficiently large $n$} \}.
+\end{align*}
+\end{definition}
+
+\begin{lemma}
+  Let $a : \mathbb{N} \to [0, \infty]$.
+  We have $\liminf_{n \to \infty} a_n \leq \limsup_{n \to \infty} a_n$.
+\end{lemma}
+
+\begin{lemma}
+  Let $u : \mathbb{N} \to [0, \infty]$ and $a \in [0, \infty]$.
+  If
+  \begin{equation*}
+    a \leq \liminf_{n \to \infty} u_n \quad \text{and} \quad
+    \limsup_{n \to \infty} u_n \leq a.
+  \end{equation*}
+  then $\lim_{n \to \infty} u_n = a$.
+  \end{lemma}
+
+
+\begin{theorem}[Fatou's lemma]
+  Let $f_0, f_1, \dots : \mathbb{R} \to [0, \infty]$ be
+  a sequence of measurable functions.
+  We have
+  \begin{equation*}
+    \underline{\int}_{x \in \mathbb{R}} \liminf_{n \to \infty} f_n (x) \, dx
+      \leq \liminf_{n \to \infty} \underline{\int}_{x \in \mathbb{R}} f_n (x) \, dx.
+  \end{equation*}
+\end{theorem}
+
+\begin{theorem}[Dominated convergence theorem]
+  Let $f_0, f_1, \dots : \mathbb{R} \to [0, \infty]$ be
+  a sequence of measurable functions,
+  and let $F : \mathbb{R} \to [0, \infty]$ be a function.
+  Let $g : \mathbb{R} \to [0, \infty]$ be another function, and 
+  suppose that the following conditions hold:
+  \begin{enumerate}
+    \item For any $n$ and for any $x \in \mathbb{R}$,
+      we have $f_n (x) \leq g (x)$.
+    \item $\underline{\int}_{x \in \mathbb{R}} g (x) \, dx < \infty$.
+    \item For any $x \in \mathbb{R}$,
+      the sequence $f_0 (x), f_1 (x), \dots$ converges to $F (x)$.
+  \end{enumerate}
+  Then we have
+  \begin{equation*}
+    \lim_{n \to \infty} \underline{\int}_{x \in \mathbb{R}} f_n (x) \, dx
+      = \underline{\int}_{x \in \mathbb{R}} F (x) \, dx.
+  \end{equation*}
+\end{theorem}
+
+\subsection{Integral of $\mathbb{R}$-valued functions}
+
+\begin{definition}
+  Let $f : \mathbb{R} \to \mathbb{R}$.
+  We say that $f$ is \emph{measurable} if
+  the set $f^{-1} (a, \infty) = \{ x \mid a < f(x) \}$ is measurable for any $a \in \mathbb{R}$.
+\end{definition}
+
+\begin{definition}
+  Let $f : \mathbb{R} \to \mathbb{R}$.
+  We say that $f$ is \emph{integrable} if the following conditions hold:
+  \begin{enumerate}
+    \item $f$ is measurable.
+    \item We have
+    \begin{equation*}
+      \underline{\int}_{x \in \mathbb{R}} \lvert f (x) \rvert \, dx < \infty.
+    \end{equation*}
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}
+  Let $f : \mathbb{R} \to \mathbb{R}$ be an integrable function.
+  We define the Lebesgue integral of $f$ by
+  \begin{equation*}
+    \int_{x \in \mathbb{R}} f (x) \, dx 
+      \coloneqq \underline{\int}_{x \in \mathbb{R}} f_+ (x) \, dx
+        - \underline{\int}_{x \in \mathbb{R}} f_- (x) \, dx \quad \in \mathbb{R},
+  \end{equation*}
+  where
+  \begin{equation*}
+    f_+ (x) \coloneqq \max ( f(x), 0 ), \quad
+    f_- (x) \coloneqq \max ( -f(x), 0 ).
+  \end{equation*}
+\end{definition}
+
+\begin{theorem}[Dominated convergence theorem]
+  Let $f_0, f_1, \dots : \mathbb{R} \to \mathbb{R}$ be
+  a sequence of measurable functions,
+  and let $F : \mathbb{R} \to \mathbb{R}$ be a function.
+  Let $g : \mathbb{R} \to \mathbb{R}$ be another function, and 
+  suppose that the following conditions hold:
+  \begin{enumerate}
+    \item For any $n$ and for any $x \in \mathbb{R}$,
+      we have $\lvert f_n (x) \rvert \leq g (x)$.
+    \item $g$ is integrable.
+    \item For any $x \in \mathbb{R}$,
+      the sequence $f_0 (x), f_1 (x), \dots$ converges to $F (x)$.
+  \end{enumerate}
+  Then we have
+  \begin{equation*}
+    \lim_{n \to \infty} \int_{x \in \mathbb{R}} f_n (x) \, dx
+      = \int_{x \in \mathbb{R}} F (x) \, dx.
+  \end{equation*}
+\end{theorem}
+
+\section{Measure theory}
+
+\subsection{Integral with respect to a measure}
+For a set $X$, we denote by $\mathcal{P}(X)$ the power set of $X$,
+i.e., the set of all subsets of $X$.
+
+\begin{definition}[Measurable space]\label{def:measurable space}
+  Let $X$ be a set.
+  A \emph{sigma-algebra} on $X$ is a set
+  $\mathcal{M} \subseteq \mathcal{P}(X)$
+  satisfying the following conditions:
+  \begin{enumerate}
+    \item $\emptyset \in \mathcal{M}$.
+    \item For any $A \in \mathcal{M}$, its complement $A^c$ is in $\mathcal{M}$.
+    \item For any sequence $A_0, A_1, \dots \in \mathcal{M}$,
+      the union $\bigcup_{n \in \mathbb{N}} A_n$ is in $\mathcal{M}$.
+    \end{enumerate}
+    A set $X$ equipped with a sigma-algebra $\mathcal{M}$ is called a \emph{measurable space}.
+    In this case, a set $A \subseteq X$ is called \emph{measurable} if $A \in \mathcal{M}$.
+\end{definition}
+
+When $X$ is a measurable space,
+the set of measurable subsets of $X$ is often denoted by $\mathcal{M}(X)$.
+
+\begin{definition}[Measure]\label{def:measure}
+  Let $X$ be a measurable space.
+  A \emph{measure} is a function $\mu : \mathcal{M}(X) \to [0, \infty]$ satisfying
+  the following properties:
+  \begin{enumerate}
+    \item $\mu(\emptyset) = 0$.
+    \item For any pairwise disjoint sequence of measurable sets $A_0, A_1, \dots \subseteq X$, 
+    we have
+    \begin{equation*}
+      \mu \left(\bigcup_{n \in \mathbb{N}} A_n\right) = \sum_{n \in \mathbb{N}} \mu(A_n).
+    \end{equation*}
+  \end{enumerate}
+\end{definition}
+
+
+% The set $\mathcal{F} \subseteq \mathcal{P}(X)$ satisfying the conditions (2)--(4)
+% in Definition~\ref{def:measurable space} is called a \emph{$\sigma$-algebra} on $X$.
+
+% \begin{example}\leavevmode
+%   \begin{enumerate}
+%     \item $X \coloneqq \mathbb{R}$, $\mathcal{M} \coloneqq \{ \text{Borel measurable subsets of $\mathbb{R}$} \}$.
+%     % \item $X \coloneqq [0, \infty]$, $\mathcal{M} \coloneqq \{ \text{Borel measurable subsets of $[0, \infty]$} \}$,
+%     % where Borel measurability is defined in the same way as for $\mathbb{R}$.
+%     \end{enumerate}
+% \end{example}
+
+% \begin{proposition}
+%   Let $X$ be a topological space.
+%   Then $X$ is a measurable space, with the measurable sets taken to be the Borel measurable sets.
+% \end{proposition}
+
+
+% \begin{definition}[Measure]\label{def:measure}
+%   Let $X$ be a measurable space.
+%   An outer measure $\mu$ on $X$ is called a \emph{measure} on $X$ if
+%   the following conditions hold:
+%   \begin{enumerate}
+%     \item For any pairwise disjoint sequence of measurable sets $A_0, A_1, \dots \subseteq X$, 
+%     we have
+%     \begin{equation*}
+%       \mu \left(\bigcup_{n \in \mathbb{N}} A_n\right) = \sum_{n \in \mathbb{N}} \mu(A_n).
+%     \end{equation*}
+%     \item For any set $A \subseteq X$, we have 
+%     \begin{equation*}
+%       \mu(A) = \inf_{\substack{B \subseteq X,\\ \text{$B$ is measurable},\, A \subseteq B}} \mu(B).
+%     \end{equation*}
+%   \end{enumerate}
+% \end{definition}
+
+% \begin{remark}
+%   A measure is often formulated as a function $\mu : \mathcal{F} \to [0, \infty]$,
+%   where $\mathcal{F}$ is the set of measurable subsets of $X$.
+%   In this setting, we can extend $\mu$ to an outer measure $\mu^*$ on $X$ by
+%   setting 
+%   \begin{equation*}
+%     \mu^*(A) \coloneqq \inf_{\substack{B \subseteq X,\\ 
+%     \text{$B$ is measurable},\, A \subseteq B}} \mu(B).
+%   \end{equation*}
+%   for any $A \subseteq X$.
+%   Then $\mu^*$ is a measure in the sense of Definition~\ref{def:measure}.
+% \end{remark}
+
+
+\begin{definition}[Measurable function]
+  Let $X$ and $Y$ be measurable spaces.
+  A function $f : X \to Y$ is said to be \emph{measurable} if
+  for any measurable set $B \subseteq Y$,
+  the set $f^{-1} (B) \subseteq X$ is measurable.
+\end{definition}
+
+\begin{definition}[Simple function]
+  Let $X$ be a measurable space,
+  and let $Y$ be a set.
+  A function $f : X \to Y$ is called \emph{simple} if
+  the following conditions hold:
+  \begin{enumerate}
+    \item $f^{-1} \{y\}$ is measurable for any $y \in Y$
+    \item The image of $f$ is a finite set.
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}[Integral of simple functions]
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  Let $f : X \to [0, \infty]$ be a simple function.
+  We define the integral of $f$ with respect to $\mu$ by
+  \begin{equation*}
+    \Simp \int_{x \in X} f (x) \, d\mu
+      \coloneqq \sum_{y \in \Img (f)}
+        y \cdot \mu(f^{-1}\{y\}).
+  \end{equation*}
+\end{definition}
+
+\begin{definition}[Lower Lebesgue integral]
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  Let $f : X \to [0, \infty]$ be a function.
+  We define the \emph{lower Lebesgue integral} of $f$ with respect to $\mu$ by
+  \begin{equation*}
+    \underline{\int}_{x \in X} f (x) \, d\mu 
+      \coloneqq \sup_{\substack{g : X \to [0, \infty],\\ \text{$g$ is simple},\, g \leq f}}
+        \Simp \int_{x \in X} g (x) \, d\mu.
+  \end{equation*}
+\end{definition}
+
+\begin{theorem}[Monotone convergence theorem]
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  Let $f_0, f_1, \dots : X \to [0, \infty]$ be
+  a sequence of measurable functions.
+  Suppose that $f_i \leq f_j$ if $i \leq j$.
+  Then we have
+  \begin{equation*}
+    \underline{\int}_{x \in X} \sup_{n \in \mathbb{N}} f_n (x) \, d\mu
+      = \sup_{n \in \mathbb{N}} \underline{\int}_{x \in X} f_n (x) \, d\mu.
+  \end{equation*}
+\end{theorem}
+
+\begin{theorem}[Fatou's lemma]
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  Let $f_0, f_1, \dots : X \to [0, \infty]$ be
+  a sequence of measurable functions.
+  We have
+  \begin{equation*}
+    \underline{\int}_{x \in X} \liminf_{n \to \infty} f_n (x) \, d\mu
+      \leq \liminf_{n \to \infty} \underline{\int}_{x \in X} f_n (x) \, d\mu.
+  \end{equation*}
+\end{theorem}
+
+\begin{theorem}[Dominated convergence theorem]
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  Let $f_0, f_1, \dots : X \to [0, \infty]$ be
+  a sequence of measurable functions,
+  and let $F : X \to [0, \infty]$ be a function.
+  Let $g : X \to [0, \infty]$ be another function, and 
+  suppose that the following conditions hold:
+  \begin{enumerate}
+    \item For any $n$ and for any $x \in X$,
+      we have $f_n (x) \leq g (x)$.
+    \item $\underline{\int}_{x \in X} g (x) \, d\mu < \infty$.
+    \item For any $x \in X$,
+      the sequence $f_0 (x), f_1 (x), \dots$ converges to $F (x)$.
+  \end{enumerate}
+  Then we have
+  \begin{equation*}
+    \lim_{n \to \infty} \underline{\int}_{x \in X} f_n (x) \, d\mu
+      = \underline{\int}_{x \in X} F (x) \, d\mu.
+  \end{equation*}
+\end{theorem}
+
+\begin{definition}
+  Let $f : X \to \mathbb{R}$.
+  We say that $f$ is \emph{integrable} with respect to $\mu$ 
+  if the following conditions hold:
+  \begin{enumerate}
+    \item $f$ is measurable.
+    \item We have
+    \begin{equation*}
+      \underline{\int}_{x \in X} \lvert f (x) \rvert \, d\mu < \infty.
+    \end{equation*}
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}
+  Let $f : X \to \mathbb{R}$ be an integrable function.
+  We define the Lebesgue integral of $f$ with respect to $\mu$ by
+  \begin{equation*}
+    \int_{x \in X} f (x) \, d\mu 
+      \coloneqq \underline{\int}_{x \in X} f_+ (x) \, d\mu
+        - \underline{\int}_{x \in X} f_- (x) \, d\mu \quad \in \mathbb{R},
+  \end{equation*}
+  where
+  \begin{equation*}
+    f_+ (x) \coloneqq \max (f(x), 0), \quad
+    f_- (x) \coloneqq \max (-f(x), 0).
+  \end{equation*}
+\end{definition}
+
+\subsection{Fundamental theorem of calculus}
+
+\begin{definition}[Restriction of a measure]
+  Let $X$ be a measurable space, and let $\mu$ be a measure on $X$.
+  Let $A \subseteq X$ be a measurable set.
+  We define the \emph{restriction of $\mu$ to $A$}, denoted by
+  $\mu|_A$, as the measure on $X$ defined by
+  \begin{equation*}
+    \mu|_A (B) \coloneqq \mu (A \cap B)
+  \end{equation*}
+  for any measurable set $B \subseteq X$.
+\end{definition}
+
+% \begin{definition}[Integral on a set]
+%   Let $X$ be a measurable space, and let $\mu$ be a measure on $X$.
+%   Let $A \subseteq X$ be a measurable set.
+%   For a function $f : X \to [0, \infty]$,
+%   we define the lower Lebesgue integral of $f$ on $A$ by
+%   \begin{equation*}
+%     \underline{\int}_{x \in A} f (x) \, d\mu
+%       \coloneqq \underline{\int}_{x \in X} f (x) \, d(\mu|_A).
+%   \end{equation*}
+%   Similarly, for a function $f : X \to \mathbb{R}$
+%   that is integrable with respect to $\mu|_A$,
+%   we define the Lebesgue integral of $f$ on $A$ by
+%   \begin{equation*}
+%     \int_{x \in A} f (x) \, d\mu
+%       \coloneqq \int_{x \in X} f (x) \, d(\mu|_A).
+%   \end{equation*}
+% \end{definition}
+
+\begin{definition}\label{ex:integral on interval}
+  Let $f : X \to \mathbb{R}$, and 
+  let $a, b \in \mathbb{R}$.
+  The \emph{interval integral} of $f$ 
+  from $a$ to $b$ is defined by
+  \begin{equation*}
+    \int_a^b f (x) \, dx 
+      \coloneqq 
+    \begin{cases}
+      \displaystyle
+      \int_{x \in \mathbb{R}} f (x) \, d(\mu|_{(a, b]}) & \text{if $a \leq b$}, \\[1em]
+      \displaystyle
+      - \int_{x \in \mathbb{R}} f (x) \, d(\mu|_{(b, a]}) & \text{if $b \leq a$},
+    \end{cases}
+  \end{equation*}
+  when both integrals on the right-hand side are integrable.
+\end{definition}
+
+\begin{theorem}
+  Let $f : \mathbb{R} \to \mathbb{R}$ and $a \in \mathbb{R}$.
+  Suppose that 
+  $f$ is measurable and
+  $\lim_{x \to a} f(x) = f(a)$.
+  % Suppose that $f$ is almost everywhere measurable 
+  % with respect to $m|_{U}$ for some open interval $U$ containing $a$.
+  Then we have
+  \begin{equation*}
+    \frac{d}{dt} \left. \left( \int_a^{t} f(x) \, dx \right)\right|_{t = a} = c.
+  \end{equation*}
+\end{theorem}
+
+\begin{corollary}
+  Let $f, F: \mathbb{R} \to \mathbb{R}$ and $a , b \in \mathbb{R}$.
+  Suppose that $f$ is continuous on $[a, b]$,
+  and that $f(x) = F'(x)$ for any $x \in [a, b]$.
+  Then we have
+  \begin{equation*}
+    \int_a^b f(x) \, dx = F(b) - F(a).
+  \end{equation*}
+\end{corollary}
+
+\subsection{Outer measure}
+
+\begin{definition}[Outer measure associated with a measure]
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  We define a function $\mu^* : \mathcal{P}(X) \to [0, \infty]$ by
+  \begin{equation*}
+    \mu^* (A) \coloneqq \inf_{\substack{B \subseteq X,\\ \text{$B$ is measurable},\, A \subseteq B}} \mu(B)
+  \end{equation*}
+  for any $A \subseteq X$.
+\end{definition}
+
+\begin{lemma}
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  \begin{enumerate}
+    \item For any $A \subseteq X$, we have $\mu (A) \leq \mu^* (A)$.
+    \item For any measurable set $A \subseteq X$, we have $\mu (A) = \mu^* (A)$.
+    \item For any $A \subseteq X$,
+      there exists a set $B \subseteq X$ such that
+      \begin{itemize}
+        \item $B$ is measurable,
+        \item $A \subseteq B$,
+        \item $\mu^* (A) = \mu (B)$.
+      \end{itemize}
+  \end{enumerate}
+\end{lemma}
+
+\begin{lemma}
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  \begin{enumerate}
+    \item $\mu^* (\emptyset) = 0$.
+    \item For any $A, B \subseteq X$ with $A \subseteq B$, we have $\mu^* (A) \leq \mu^* (B)$.
+    \item For any sequence of sets $A_0, A_1, \dots \subseteq X$, we have
+      \begin{equation*}
+        \mu^* \left(\bigcup_{n \in \mathbb{N}} A_n\right) \leq \sum_{n \in \mathbb{N}} \mu^* (A_n).
+      \end{equation*}
+  \end{enumerate}
+\end{lemma}
+
+\begin{definition}[Outer measure]
+  Let $X$ be a set.
+  An \emph{outer measure} on $X$ is a function $\mu : \mathcal{P}(X) \to [0, \infty]$ satisfying the following properties:
+  \begin{enumerate}
+    \item $\mu(\emptyset) = 0$.
+    \item For $A, B \subseteq X$ with $A \subseteq B$, we have $\mu(A) \leq \mu(B)$.
+    \item For any sequence of sets $A_0, A_1, \dots \subseteq X$, 
+      we have
+      \begin{equation*}
+        \mu \left(\bigcup_{n \in \mathbb{N}} A_n\right) \leq \sum_{n \in \mathbb{N}} \mu(A_n).
+      \end{equation*}
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}[Carath\'eodory' criterion]
+  Let $X$ be a set, and let $\mu$ be an outer measure on $X$.
+  We say that a set $A \subseteq X$ is
+  \emph{carath\'eodory} with respect to $\mu$ if
+  for any set $B \subseteq X$, we have 
+  \begin{equation*}
+    \mu(B) = \mu(B \cap A) + \mu(B \setminus A).
+  \end{equation*}
+\end{definition}
+
+\begin{lemma}
+  Let $X$ be a measurable space, and let $\mu$ be a measure on $X$.
+  Then any measurable set $A \subseteq X$ is carath\'eodory with respect to $\mu^*$.
+\end{lemma}
+
+\begin{proposition}[Measure from outer measure]
+  Let $X$ be a measurable space,
+  and let $\bar{\mu}$ be an outer measure on $X$.
+  Suppose that any measurable set $A \subseteq X$ 
+  is carath\'eodory with respect to $\bar{\mu}$.
+  Define a function $\mu : \mathcal{M}(X) \to [0, \infty]$ by
+  \begin{equation*}
+    \mu(A) \coloneqq \bar{\mu} (A)
+  \end{equation*}
+  for any measurable set $A \subseteq X$.
+  % \begin{equation*}
+  %   \mu (A) \coloneqq \inf_{\substack{B : \mathbb{N} \to \mathcal{P}(X),\\
+  %     \text{$\forall n$, $B_n$ is measurable},\\
+  %     A \subseteq \bigcup_n B_n}} \sum_n \bar{\mu} (B_n).
+  % \end{equation*}
+  % Let $\bar{\mu}' : \mathcal{P}(X) \to [0, \infty]$ be a function defined by
+  % \begin{equation*}
+  %   \bar{\mu}' (A) \coloneqq 
+  %   \begin{cases}
+  %     \bar{\mu} (A) & \text{if $A$ is measurable}, \\
+  %     \infty & \text{otherwise}.
+  %   \end{cases}
+  % \end{equation*}
+  % Then the outer measure $\mu$ associated with $\bar{\mu}'$ is a measure on $X$.
+  Then $\mu$ is a measure on $X$.
+  We call $\mu$ the \emph{measure associated with $\bar{\mu}$}.
+\end{proposition}
+
+% \subsection{Construction of measures}
+
+\subsection{Measurable space generated by a set of sets}
+
+\begin{definition}[Measurable space generated by a set of sets]
+  Let $X$ be a set,
+  and let $\mathcal{F} \subseteq \mathcal{P}(X)$.
+  We inductively define the sigma-algebra $\gen (\mathcal{F})$ on $X$,
+  called the \emph{sigma-algebra generated by $\mathcal{F}$},
+  as follows:
+  \begin{enumerate}
+    \item For any $A \in \mathcal{F}$, we have $A \in \gen (\mathcal{F})$.
+    \item $\emptyset \in \gen (\mathcal{F})$.
+    \item For any $A \in \gen (\mathcal{F})$, we have $A^c \in \gen (\mathcal{F})$.
+    \item For any sequence $A_0, A_1, \dots \in \gen (\mathcal{F})$,
+      we have $\bigcup_{n \in \mathbb{N}} A_n \in \gen (\mathcal{F})$.
+  \end{enumerate}
+  % We denote by $\gen (\mathcal{F})$ 
+  % The resulting sigma-algebra on $X$ is called the
+  % \emph{sigma-algebra generated by $\mathcal{F}$}.
+\end{definition}
+
+\begin{definition}[Borel measurable set]
+  Let $X$ be a topological space (or a metric space, if you are not familiar with topological spaces).
+  Then we regard $X$ as a measurable space,
+  equipping it with the sigma-algebra
+  $\gen (\{U \subseteq X \mid \text{$U$ is open}\})$.
+  In this situation, a measurable set $A \subseteq X$ 
+  is called a \emph{Borel measurable set}.
+\end{definition}
+
+\begin{proposition}[Induction principle for measurable sets]
+  Let $X$ be a measurable space, 
+  and let $\mathcal{F} \subseteq \mathcal{P}(X)$.
+  Suppose that $\mathcal{M}(X) = \gen (\mathcal{F})$.
+  Let $P(A)$ be a property on measurable sets $A \subseteq X$.
+  Suppose that the following conditions hold:
+  \begin{enumerate}
+    \item For any $A \in \mathcal{F}$, we have $P(A)$.
+    \item We have $P(\emptyset)$.
+    \item For any measurable set $A \subseteq X$, we have $P(A)$ implies $P(A^c)$.
+    \item For any sequence of measurable sets $A_0, A_1, \dots \subseteq X$,
+      we have $\forall n \in \mathbb{N}, P(A_n)$ implies $P\left(\bigcup_{n \in \mathbb{N}} A_n\right)$.  
+  \end{enumerate}
+  Then any measurable set $A \subseteq X$ satisfies $P(A)$.
+\end{proposition}
+
+\begin{definition}
+  Let $X$ be a set, and let $\mathcal{F} \subseteq \mathcal{P}(X)$.
+  We inductively define the set of sets $\dgen (\mathcal{F}) \subseteq \mathcal{P}(X)$,
+  called the \emph{Dynkin system generated by $\mathcal{F}$},
+  as follows:
+  \begin{enumerate}
+    \item For any $A \in \mathcal{F}$, we have $A \in \dgen (\mathcal{F})$.
+    \item $\emptyset \in \dgen (\mathcal{F})$.
+    \item For any $A \in \dgen (\mathcal{F})$, we have $A^c \in \dgen (\mathcal{F})$.
+    \item For any sequence $A_0, A_1, \dots \in \dgen (\mathcal{F})$ such that $A_i \cap A_j = \emptyset$ if $i \neq j$,
+      we have $\bigcup_{n \in \mathbb{N}} A_n \in \dgen (\mathcal{F})$.
+  \end{enumerate}
+\end{definition}
+
+\begin{proposition}[Dynkin's $\pi$-$\lambda$ theorem]
+  Let $X$ be a measurable space, and let $\mathcal{F} \subseteq \mathcal{P}(X)$.
+  Suppose that $\mathcal{M}(X) = \gen (\mathcal{F})$.
+  Suppose that for any $A, B \in \mathcal{F}$, we have $A \cap B \in \mathcal{F}$.
+  Then for any $A \subseteq X$, 
+  $A$ is measurable if and only if $A \in \dgen (\mathcal{F})$. 
+\end{proposition}
+
+\begin{proposition}[Dinkin's induction principle for measurable sets]
+  Let $X$ be a measurable space, 
+  and let $\mathcal{F} \subseteq \mathcal{P}(X)$.
+  Suppose that $\mathcal{M}(X) = \gen (\mathcal{F})$.
+  Suppose that for any $A, B \in \mathcal{F}$, we have $A \cap B \in \mathcal{F}$.
+  Let $P(A)$ be a property on measurable sets $A \subseteq X$.
+  Suppose that the following conditions hold:
+  \begin{enumerate}
+    \item For any $A \in \mathcal{F}$, we have $P(A)$.
+    \item We have $P(\emptyset)$.
+    \item For any measurable set $A \subseteq X$, we have $P(A)$ implies $P(A^c)$.
+    \item For any sequence of measurable sets $A_0, A_1, \dots \subseteq X$ 
+      such that $A_i \cap A_j = \emptyset$ if $i \neq j$,
+      we have $\forall n \in \mathbb{N}, P(A_n)$ implies $P\left(\bigcup_{n \in \mathbb{N}} A_n\right)$.  
+  \end{enumerate}
+  Then any measurable set $A \subseteq X$ satisfies $P(A)$.
+\end{proposition}
+
+% \begin{proposition}[Outer measure from a function]
+%   Let $X$ be a set,
+%   and let $F : \mathcal{P}(X) \to [0, \infty]$ be a function. 
+%   Suppose that $F (\emptyset) = 0$.
+%   Then the function $\mu : \mathcal{P}(X) \to [0, \infty]$ defined by
+%   \begin{equation*}
+%     \mu (A) \coloneqq \inf_{\substack{B : \mathbb{N} \to \mathcal{F},\\ 
+%       A \subseteq \bigcup_n B_n}} \sum_n F (B_n).
+%   \end{equation*}
+%   is an outer measure on $X$.
+%   We call $\mu$ the \emph{outer measure associated with $F$}.
+% \end{proposition}
+
+% \begin{definition}[Outer measure from a function on a subset of sets]
+%   Let $X$ be a set,
+%   $\mathcal{F} \subseteq \mathcal{P}(X)$ be a set of subsets of $X$,
+%   and let $F : \mathcal{F} \to [0, \infty]$ be a function. 
+%   Suppose that $\emptyset \in \mathcal{F}$ and $F (\emptyset) = 0$.
+%   Then the function $\mu : \mathcal{P}(X) \to [0, \infty]$ defined 
+%   as the measure associated with the function $F'$ defined by
+%   \begin{equation*}
+%     F' (A) \coloneqq 
+%       \begin{cases}
+%         F (A) & \text{if $A \in \mathcal{F}$}, \\
+%         \infty & \text{otherwise},
+%       \end{cases}
+%   \end{equation*}
+%   is an outer measure on $X$.
+%   We call $\mu$ the \emph{outer measure associated with $F$}.
+% \end{definition}
+
+% \begin{proposition}
+%   Let $X$ be a set, and let $\mu$ be an outer measure on $X$.
+%   Let $A_0, A_1, \dots \subseteq X$ be
+%   pairwise disjoint subsets.
+%   Suppose that each $A_n$ is Carath\'eodory measurable with respect to $\mu$.
+%   Then we have
+%   \begin{equation*}
+%     \mu \left(\bigcup_{n \in \mathbb{N}} A_n\right) 
+%       = \sum_{n \in \mathbb{N}} \mu(A_n).
+%   \end{equation*}
+% \end{proposition}
+
+% \begin{proposition}
+%   Let $X$ be a measurable space,
+%   and let $\bar{\mu}$ be an outer measure on $X$.
+%   Suppose that any measurable set $A \subseteq X$ is Carath\'eodory measurable.
+%   Let $\mu$ be the measure associated with $\bar{\mu}$.
+%   Show that for any set $A \subseteq X$, we have $\bar{\mu} (A) \leq \mu^* (A)$.
+%   Show that if in addition $A$ is measurable, we have $\bar{\mu}(A) = \mu (A) = \mu^* (A)$.
+% \end{proposition}
+
+% \begin{definition}[Pushforward measure]
+%   Let $X$ and $Y$ be measurable spaces,
+%   and $f : X \to Y$ be a function.
+%   Let $\mu$ be an outer measure on $X$.
+%   We define the \emph{pushforward measure},
+%   denoted by $f_* \mu$, as the 
+%   measure on $Y$ defined by
+%   \begin{equation*}
+%     (f_* \mu) (A) \coloneqq \mu (f^{-1} (A))
+%   \end{equation*}
+%   for any measurable $A \subseteq Y$.
+% \end{definition}
+
+% \begin{exercise}
+%   Show that $f_* \mu$ is indeed a measure on $Y$.
+% \end{exercise}
+
+% \begin{lemma}
+%   Let $X$ and $Y$ be measurable spaces, and let $\mu$ be a measure on $X$.
+%   Let $f : X \to Y$ be a measurable function.
+%   Then any measurable set $A \subseteq Y$ 
+%   is Carath\'eodory measurable with respect to the 
+%   outer measure $f_* \mu$.
+% \end{lemma}
+
+% \begin{definition}[Pushforward measure]
+%   Let $X$ and $Y$ be measurable spaces,
+%   and let $\mu$ be a measure on $X$.
+%   Let $f : X \to Y$ be a measurable function.
+%   We define the \emph{pushforward measure},
+%   denoted by $f_* \mu$, as the 
+%   measure on $Y$ defined by
+%   \begin{equation*}
+%     (f_* \mu) (A) \coloneqq \mu (f^{-1} (A))
+%   \end{equation*}
+%   for any $A \subseteq Y$.
+% \end{definition}
+
+% \begin{definition}[Restriction of a measure]
+%   Let $X$ be a measurable space, and let $\mu$ be a measure on $X$.
+%   Let $A \subseteq X$.
+%   We define the \emph{restriction of $\mu$ to $A$}, denoted by
+%   $\mu|_A$, as the measure on $X$ defined by
+%   \begin{equation*}
+%     \mu|_A (B) \coloneqq \mu (A \cap B)
+%   \end{equation*}
+%   for any measurable set $B \subseteq X$.
+% \end{definition}
+
+% \begin{exercise}
+%   Show that $\mu|_A$ is indeed an outer measure on $X$.
+% \end{exercise}
+
+% \begin{lemma}
+%   Let $(X,\mathcal{F})$ be a measurable space, and let $\mu$ be a measure on $(X,\mathcal{F})$.
+%   Let $A \subseteq X$ be a set.
+%   Then any measurable set $B \subseteq X$
+%   is Carath\'eodory measurable with respect to the outer measure $\mu|_A^{\mathrm{outer}}$
+% \end{lemma}
+
+% \begin{definition}[Restriction of a measure]
+%   Let $X$ be a measurable space, and let $\mu$ be a measure on $X$.
+%   Let $A \subseteq X$.
+%   The \emph{restriction of $\mu$ to $A$}, denoted by $\mu|_A$, is defined as
+%   the measure on $X$ associated with the outer measure $\mu|_A^{\mathrm{outer}}$.
+% \end{definition}
+
+% \begin{exercise}
+%   Show that for any measurable set $B \subseteq X$,
+%   we have $\mu|_A (B) = \mu (A \cap B)$.
+% \end{exercise}
+
+\subsection{Product measure}
+
+\begin{definition}[Set of measures as a measurable space]
+  Let $X$ be a measurable space.
+  We denote by $\Measure(X)$ the set of all measures on $X$.
+  We regard $\Measure(X)$ as a measurable space 
+  by equipping it with the sigma-algebra generated by the set
+  \begin{equation*}
+    \{ (\mu \mapsto \mu (A))^{-1} (B) 
+      \mid \text{$A \subseteq X$ is measurable and $B \subseteq [0, \infty]$ is measurable} \}.
+  \end{equation*}
+\end{definition}
+
+\begin{exercise}
+  Let $A \subseteq X$ be a measurable set.
+  Show that
+  the function from $\Measure (X)$ to $[0, \infty]$
+  defined by $\mu \mapsto \mu (A)$ is measurable.
+\end{exercise}
+
+\begin{proposition}[Kernel integration]
+  Let $X$ and $Y$ be measurable spaces.
+  Let $\nu : X \to \Measure (Y)$. 
+  Suppose that $\nu$ is a measurable function.
+  We have a function 
+  $\mathcal{K}_\nu : \Measure (X) \to \Measure (Y)$ defined by
+  \begin{equation*}
+    \mathcal{K}_\nu (\mu) (A) 
+      = \underline{\int}_{x \in X} \nu(x) (A) \, d\mu
+  \end{equation*}
+  for any measure $\mu$ on $X$ and for any measurable set $A \subseteq Y$.
+  % Then the function from $\mathcal{P}(Y)$ to $[0, \infty]$
+  % defined by
+  % \begin{equation*}
+  %   A \mapsto \underline{\int}_{x \in X} f(x) (A) \, d\mu
+  % \end{equation*}
+  % is an outer measure on $Y$.
+  % We denote by $\mu \mathcal{K}_f$ the measure on $Y$ associated with this outer measure.
+\end{proposition}
+
+% \begin{exercise}
+%   Show that 
+%   \begin{equation*}
+%     \mu \mathcal{K}_f (A) 
+%       = \underline{\int}_{x \in X} f(x) (A) \, d\mu
+%   \end{equation*}
+%   for any measurable set $A \subseteq Y$.
+% \end{exercise}
+
+\begin{definition}[Product of measurable spaces]
+  Let $X$ and $Y$ be measurable spaces.
+  We regard the set $X \times Y$ as a measurable space
+  by equipping it with the sigma-algebra generated by the set
+  \begin{equation*}
+    \{ A \times B \mid \text{$A \subseteq X$ and $B \subseteq Y$ are measurable} \}.
+  \end{equation*}
+\end{definition}
+
+\begin{definition}
+  Let $X$ be a measurable space.
+  A measure $\mu$ on $X$ is said to be \emph{finite} if
+  $\mu (X) < \infty$.
+\end{definition}
+
+\begin{proposition}
+  Let $X$ be a measurable space.
+  Let $\mu : \mathbb{N} \to \Measure (X)$ be a sequence of measures on $X$.
+  Then the function $\sum_{n \in \mathbb{N}} \mu_n$ defined by
+  \begin{equation*}
+    \left( \sum_{n \in \mathbb{N}} \mu_n \right) (A)
+      \coloneqq \sum_{n \in \mathbb{N}} \mu_n (A)
+  \end{equation*}
+  for any measurable set $A \subseteq X$
+  is a measure on $X$.
+\end{proposition}
+
+\begin{definition}[S-finite]
+  Let $X$ be a measurable space,
+  and let $\mu$ be a measure on $X$.
+  We say that $\mu$ is \emph{S-finite} if
+  there exists a sequence 
+  $\nu : \mathbb{N} \to \Measure (X)$ of measure on $X$ such that 
+  $\nu_n$ is finite for any $n \in \mathbb{N}$
+  and $\mu = \sum_{n \in \mathbb{N}} \nu_n$.
+\end{definition}
+
+\begin{example}
+  The Lebesgue measure on $\mathbb{R}$ is S-finite.
+  This is because we have
+  \begin{equation*}
+    m = \sum_{n \in \mathbb{Z}} m|_{(n, n+1]}.
+  \end{equation*}
+\end{example}
+
+% \begin{definition}
+%   Let $X$ be a measurable space,
+%   and let $\mu$ be a measure on $X$.
+%   We say that $\mu$ is \emph{sigma-finite} if
+%   there exists a countable sequence 
+%   $A_0, A_1, \dots \subseteq X$ of measurable sets such that
+%   $X = \bigcup_{n \in \mathbb{N}} A_n$
+%   and $\mu (A_n) < \infty$ for any $n \in \mathbb{N}$.
+% \end{definition}
+
+\begin{proposition}
+  Let $X$ and $Y$ be measurable spaces.
+  Let $\mu$ be a measure on $X$,
+  and let $\nu$ be a measure on $Y$.
+  Suppose that $\nu$ is S-finite.
+  Then for any measurable sets $A \subseteq X \times Y$,
+  the function $f : X \to [0, \infty]$ defined by
+  $f (x) \coloneqq \nu (\{ y \in Y \mid (x,y) \in A \})$
+  is measurable.
+  Suppose in addition that $\mu$ is also S-finite.
+  Then for any measurable sets $A \subseteq X \times Y$,
+  the function $g : Y \to [0, \infty]$ defined by
+  $g (y) \coloneqq \mu (\{ x \in X \mid (x,y) \in A \})$
+  is measurable.
+\end{proposition}
+
+\begin{definition}[Product measure]
+  Let $X$ and $Y$ be measurable spaces.
+  Let $\mu$ be a measure on $X$,
+  and let $\nu$ be a measure on $Y$.
+  Suppose that $\nu$ is S-finite.
+  Let $\nu' : X \to \Measure (X \times Y)$ be 
+  a function defined by
+  \begin{equation*}
+    \nu' (x) (A) \coloneqq \nu (\{ y \in Y \mid (x,y) \in A \}).
+  \end{equation*}
+  We define the \emph{product measure} $\mu \times \nu$ on $X \times Y$ by
+  \begin{equation*}
+    \mu \times \nu \coloneqq \mu \mathcal{K}_{\nu'}.
+  \end{equation*}
+\end{definition}
+
+\begin{exercise}
+  Suppose that $\mu$ and $\nu$ are S-finite.
+  Show that for any measurable set $A \subseteq X \times Y$,
+  we have
+  \begin{align*}
+    (\mu \times \nu) (A) 
+      &= \underline{\int}_{x \in X} \nu (\{ y \in Y \mid (x,y) \in A \}) \, d\mu \\
+      &= \underline{\int}_{y \in Y} \mu (\{ x \in X \mid (x,y) \in A \}) \, d\nu.
+  \end{align*}
+\end{exercise}
+
+\begin{exercise}
+  Suppose that $\mu$ and $\nu$ are S-finite.
+  Show that for any measurable sets $A \subseteq X$ and $B \subseteq Y$,
+  we have
+  \begin{equation*}
+    (\mu \times \nu) (A \times B) = \mu (A) \cdot \nu (B).
+  \end{equation*}
+\end{exercise}
+
+\begin{theorem}[Tonelli's theorem]
+  Let $X$ and $Y$ be measurable spaces.
+  Let $\mu$ be a measure on $X$,
+  and let $\nu$ be a measure on $Y$.
+  Suppose that $\mu$ and $\nu$ are S-finite.
+  Let $f : X \times Y \to [0, \infty]$ be a measurable function.
+  Then we have
+  \begin{align*}
+    \underline{\int}_{(x,y) \in X \times Y} f (x,y) \, d(\mu \times \nu)
+      &= \underline{\int}_{x \in X} \left(
+          \underline{\int}_{y \in Y} f (x,y) \, d\nu
+        \right) d\mu \\
+      &= \underline{\int}_{y \in Y} \left(
+          \underline{\int}_{x \in X} f (x,y) \, d\mu
+        \right) d\nu.
+  \end{align*}
+\end{theorem}
+
+\end{document}

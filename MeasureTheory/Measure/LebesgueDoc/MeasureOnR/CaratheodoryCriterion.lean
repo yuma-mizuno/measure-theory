@@ -61,7 +61,7 @@ MTI.Real.measure_c_union
 ::::localized
 Carathéodory sets are closed under union, complement, intersection.
 :::locale "ja"
-カラテオドリ集合は和集合、補集合、共通部分で閉じている。
+カラテオドリ集合の和集合、補集合、共通部分も再びカラテオドリである。
 :::
 ::::
 :::::

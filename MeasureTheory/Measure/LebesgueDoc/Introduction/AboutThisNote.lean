@@ -24,6 +24,16 @@ It collects the main definitions and theorems covered in the course.
 ::::
 
 ::::localized
+The source for this note is available on
+[GitHub](https://github.com/yuma-mizuno/measure-theory).
+:::locale "ja"
+この資料のソースは
+[GitHub](https://github.com/yuma-mizuno/measure-theory)
+で公開しています。
+:::
+::::
+
+::::localized
 As an experiment, this note is accompanied by proofs written in [Lean](https://lean-lang.org), a proof assistant and
 programming language for formal mathematics.
 Such tools are likely to become increasingly important in the future of mathematics.

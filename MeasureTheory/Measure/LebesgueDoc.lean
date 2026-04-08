@@ -142,7 +142,7 @@ Here we introduce three of them: the *monotone convergence theorem*,
 *Fatou's lemma*, and the *dominated convergence theorem*.
 :::locale "ja"
 実数値関数 $`f : \mathbb{R} \to \mathbb{R}` の積分を考えたいと思います。
-しかし、いくつかの理由から、まずは無限大の値を許す非負関数 $`f : \mathbb{R} \to [0, \infty]` の積分から始めるのが自然です。
+しかし、いくつかの理由から、まずは無限大の値を許す非負関数 $`f : \mathbb{R} \to [0, \infty]` の積分から始めましょう。
 
 ルベーグ積分の重要なアイディアの一つは、値域に注目することです。
 たとえば、$`f` が $`\{0, 2, 3\}` の値しか取らないとわかっているとします。そのとき、$`f` の積分はどのように定義されるべきでしょうか。

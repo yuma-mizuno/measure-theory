@@ -22,11 +22,20 @@ tag := "measurable-sets"
 
 :::::definitionBox
 ::::localized
-Measurable subsets of $`\mathbb{R}` are generated from the half-lines
-$`[a,\infty)` together with the empty set by closing under complements and
-countable unions.
+We define inductively the notion of a subset $`A \subseteq \mathbb{R}` being
+_(Borel) measurable_ as follows:
+1. For every $`a \in \mathbb{R}`, the half-line $`[a,\infty)` is measurable.
+2. The empty set $`\emptyset` is measurable.
+3. If $`A` is measurable, then its complement $`A^c` is measurable.
+4. If $`A_0, A_1, \dots` are measurable, then $`\bigcup_{n \in \mathbb{N}} A_n`
+   is measurable.
 :::locale "ja"
-$`\mathbb{R}` の可測部分集合は、半直線 $`[a,\infty)` と空集合から出発して、補集合と可算和で閉じるようにして生成される。
+部分集合 $`A \subseteq \mathbb{R}` が _（ボレル）可測_ であるという概念を、
+次のように帰納的に定義する。
+1. 任意の $`a \in \mathbb{R}` に対して、半直線 $`[a,\infty)` は可測である。
+2. 空集合 $`\emptyset` は可測である。
+3. $`A` が可測ならば、その補集合 $`A^c` も可測である。
+4. $`A_0, A_1, \dots` が可測ならば、$`\bigcup_{n \in \mathbb{N}} A_n` も可測である。
 :::
 ::::
 :::::
@@ -56,7 +65,7 @@ Countable unions and intersections of measurable sets are measurable.
 可測集合の可算和と可算共通部分は可測である。
 :::
 ::::
-::::: 
+:::::
 
 ```leanDecl
 MTI.Real.MeasurableSet.iUnion
@@ -70,7 +79,7 @@ Unions, complements, and intersections of measurable sets are measurable.
 可測集合の和集合、補集合、共通部分は可測である。
 :::
 ::::
-::::: 
+:::::
 
 ```leanDecl
 MTI.Real.MeasurableSet.union

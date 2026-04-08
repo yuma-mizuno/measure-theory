@@ -130,27 +130,29 @@ MTI.integral
 ::::localized
 The Lebesgue integral is linear on integrable real-valued functions:
 $$`
-  \int_{x \in X} (f(x) + g(x))\,d\mu
-    =
-  \int_{x \in X} f(x)\,d\mu
-    +
-  \int_{x \in X} g(x)\,d\mu,
-
-  \int_{x \in X} c f(x)\,d\mu
-    =
-  c \int_{x \in X} f(x)\,d\mu.`
+  \begin{aligned}
+    \int_{x \in X} (f(x) + g(x))\,d\mu
+      &=
+    \int_{x \in X} f(x)\,d\mu \\
+      &\quad +
+    \int_{x \in X} g(x)\,d\mu, \\
+    \int_{x \in X} c f(x)\,d\mu
+      &=
+    c \int_{x \in X} f(x)\,d\mu.
+  \end{aligned}`
 :::locale "ja"
 ルベーグ積分は可積分な実数値関数の上で線形である:
 $$`
-  \int_{x \in X} (f(x) + g(x))\,d\mu
-    =
-  \int_{x \in X} f(x)\,d\mu
-    +
-  \int_{x \in X} g(x)\,d\mu,
-
-  \int_{x \in X} c f(x)\,d\mu
-    =
-  c \int_{x \in X} f(x)\,d\mu.
+  \begin{aligned}
+    \int_{x \in X} (f(x) + g(x))\,d\mu
+      &=
+    \int_{x \in X} f(x)\,d\mu \\
+      &\quad +
+    \int_{x \in X} g(x)\,d\mu, \\
+    \int_{x \in X} c f(x)\,d\mu
+      &=
+    c \int_{x \in X} f(x)\,d\mu.
+  \end{aligned}
 `
 :::
 ::::

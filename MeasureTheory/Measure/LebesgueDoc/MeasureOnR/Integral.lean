@@ -150,27 +150,29 @@ MTI.Real.integral_zero
 ::::localized
 The Lebesgue integral is linear on integrable real-valued functions:
 $$`
-  \int_{x \in \mathbb{R}} (f(x) + g(x))\,dx
-    =
-  \int_{x \in \mathbb{R}} f(x)\,dx
-    +
-  \int_{x \in \mathbb{R}} g(x)\,dx,
-
-  \int_{x \in \mathbb{R}} c f(x)\,dx
-    =
-  c \int_{x \in \mathbb{R}} f(x)\,dx.`
+  \begin{aligned}
+    \int_{x \in \mathbb{R}} (f(x) + g(x))\,dx
+      &=
+    \int_{x \in \mathbb{R}} f(x)\,dx \\
+      &\quad +
+    \int_{x \in \mathbb{R}} g(x)\,dx, \\
+    \int_{x \in \mathbb{R}} c f(x)\,dx
+      &=
+    c \int_{x \in \mathbb{R}} f(x)\,dx.
+  \end{aligned}`
 :::locale "ja"
 ルベーグ積分は可積分な実数値関数の上で線形である:
 $$`
-  \int_{x \in \mathbb{R}} (f(x) + g(x))\,dx
-    =
-  \int_{x \in \mathbb{R}} f(x)\,dx
-    +
-  \int_{x \in \mathbb{R}} g(x)\,dx,
-
-  \int_{x \in \mathbb{R}} c f(x)\,dx
-    =
-  c \int_{x \in \mathbb{R}} f(x)\,dx.
+  \begin{aligned}
+    \int_{x \in \mathbb{R}} (f(x) + g(x))\,dx
+      &=
+    \int_{x \in \mathbb{R}} f(x)\,dx \\
+      &\quad +
+    \int_{x \in \mathbb{R}} g(x)\,dx, \\
+    \int_{x \in \mathbb{R}} c f(x)\,dx
+      &=
+    c \int_{x \in \mathbb{R}} f(x)\,dx.
+  \end{aligned}
 `
 :::
 ::::

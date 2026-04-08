@@ -149,13 +149,13 @@ MTI.prod_apply
 
 :::::lemmaBox
 ::::localized
-Suppose that $`\mu` and $`\nu` are S-finite.
+Suppose that $`\nu` is S-finite.
 Then for any measurable sets $`A \subseteq X` and $`B \subseteq Y`,
 we have
 $$`
   (\mu \times \nu) (A \times B) = \mu (A) \cdot \nu (B).`
 :::locale "ja"
-$`\mu` と $`\nu` が S-有限であるとする。
+$`\nu` が S-有限であるとする。
 このとき任意の可測集合 $`A \subseteq X` と $`B \subseteq Y` に対して
 $$`
   (\mu \times \nu) (A \times B) = \mu (A) \cdot \nu (B)

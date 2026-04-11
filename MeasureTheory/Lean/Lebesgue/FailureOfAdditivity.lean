@@ -11,58 +11,6 @@ namespace MTI
 
 namespace Real
 
-def rationalRel (x y : ℝ) : Prop := ∃ q : ℚ, x - y = (q : ℝ)
-
-theorem rationalRel_refl (x : ℝ) : rationalRel x x := ⟨0, by simp⟩
-
-theorem rationalRel_symm {x y : ℝ} (h : rationalRel x y) : rationalRel y x := by
-  rcases h with ⟨q, hq⟩
-  refine ⟨-q, ?_⟩
-  simpa [sub_eq_add_neg, add_assoc, add_left_comm, add_comm] using congrArg Neg.neg hq
-
-theorem rationalRel_trans {x y z : ℝ} (hxy : rationalRel x y) (hyz : rationalRel y z) :
-    rationalRel x z := by
-  rcases hxy with ⟨q1, hq1⟩
-  rcases hyz with ⟨q2, hq2⟩
-  refine ⟨q1 + q2, ?_⟩
-  change x - z = ((q1 + q2 : ℚ) : ℝ)
-  calc
-    x - z = (x - y) + (y - z) := by ring
-    _ = (q1 : ℝ) + (q2 : ℝ) := by rw [hq1, hq2]
-    _ = ((q1 + q2 : ℚ) : ℝ) := by simp
-
-def vitaliSetoid : Setoid (Icc 0 1 : Set ℝ) where
-  r x y := rationalRel x y
-  iseqv := ⟨fun x ↦ rationalRel_refl x, rationalRel_symm, rationalRel_trans⟩
-
-local instance : Setoid (Icc 0 1 : Set ℝ) := vitaliSetoid
-
-def vitaliSet : Set ℝ :=
-  Set.range fun q : Quotient vitaliSetoid ↦ (Quotient.out q : (Icc 0 1 : Set ℝ))
-
-theorem vitaliSet_subset_Icc_zero_one : vitaliSet ⊆ Icc 0 1 := by
-  rintro x ⟨q, rfl⟩
-  exact (Quotient.out q).2
-
-theorem existsUnique_mem_vitaliSet_rationalRel (x : ↥(Icc 0 1 : Set ℝ)) :
-    ∃! y : (Icc 0 1 : Set ℝ), (y : ℝ) ∈ vitaliSet ∧ rationalRel x y := by
-  let qx : Quotient vitaliSetoid := Quotient.mk'' x
-  refine ⟨Quotient.out qx, ⟨⟨qx, rfl⟩, rationalRel_symm (Quotient.mk_out' x)⟩, ?_⟩
-  intro y hy
-  rcases hy.1 with ⟨q, hq⟩
-  have hqy : Quotient.out q = y := Subtype.ext hq
-  have hqqx :=
-    calc
-      q = Quotient.mk'' (Quotient.out q) := (Quotient.out_eq' q).symm
-      _ = Quotient.mk'' y := by rw [hqy]
-      _ = qx := by
-        simpa [qx] using (Quotient.sound hy.2).symm
-  simpa [hqy] using congrArg Quotient.out hqqx
-
-@[simp]
-theorem measure_Icc_zero_one : measure (Icc 0 1) = 1 := by
-  simpa using measure_Icc 0 1
-
 def translate (A : Set ℝ) (c : ℝ) : Set ℝ := {x | x - c ∈ A}
 
 @[simp]
@@ -119,28 +67,46 @@ theorem measure_translate (A : Set ℝ) (c : ℝ) : measure (translate A c) = me
   simpa [translate_translate, translate_zero] using
     (measure_translate_le (translate A c) (-c))
 
-theorem Icc_zero_one_subset_iUnion_translate_vitaliSet :
-    Icc 0 1 ⊆ ⋃ q : (Icc (-1) 1 : Set ℚ), translate vitaliSet (q : ℚ) := by
-  intro x hx
-  rcases existsUnique_mem_vitaliSet_rationalRel ⟨x, hx⟩ with ⟨y, hy, _hyuniq⟩
-  rcases hy.2 with ⟨q, hq⟩
-  have hq_lower : (-1 : ℚ) ≤ q := by
-    exact_mod_cast (by grind [hx.1, y.2.2] : (-1 : ℝ) ≤ (q : ℝ))
-  have hq_upper : q ≤ (1 : ℚ) := by
-    exact_mod_cast (by grind [hx.2, y.2.1] : (q : ℝ) ≤ 1)
-  let q' : (Icc (-1) 1 : Set ℚ) := ⟨q, ⟨hq_lower, hq_upper⟩⟩
-  refine mem_iUnion.2 ⟨q', ?_⟩
-  have hxq : x - (q : ℝ) = (y : ℝ) := by grind
-  simpa [translate, q', hxq] using hy.1
+structure IsVitali (A : Set ℝ) : Prop where
+  exists_rational : ∀ x : ℝ, ∃! q : ℚ, x - q ∈ A
+  subset_Icc_zero_one : A ⊆ Icc 0 1
 
-theorem measure_vitaliSet_ne_zero : measure vitaliSet ≠ 0 := by
+@[simp]
+theorem measure_Icc_zero_one : measure (Icc 0 1) = 1 := by
+  simpa using measure_Icc 0 1
+
+theorem IsVitali.pairwise_disjoint_translates {A : Set ℝ} (hA : IsVitali A)
+    {q r : ℚ} (hqr : q ≠ r) : translate A q ∩ translate A r = ∅ := by
+  ext x
+  constructor
+  · rintro ⟨hxq, hxr⟩
+    rcases hA.exists_rational x with ⟨s, _, hsuniq⟩
+    exact (hqr ((hsuniq q hxq).trans (hsuniq r hxr).symm)).elim
+  · simp
+
+theorem IsVitali.Icc_zero_one_subset_iUnion_translate {A : Set ℝ} (hA : IsVitali A) :
+    Icc 0 1 ⊆ ⋃ q : (Icc (-1) 1 : Set ℚ), translate A (q : ℚ) := by
+  intro x hx
+  rcases hA.exists_rational x with ⟨q, hqA, _⟩
+  have hq_lower : (-1 : ℚ) ≤ q := by
+    suffices (q : ℝ) ≥ -1 by exact_mod_cast this
+    have hxq : x - (q : ℝ) ∈ Icc 0 1 := hA.subset_Icc_zero_one hqA
+    grind [hx.1, hxq.2]
+  have hq_upper : q ≤ (1 : ℚ) := by
+    suffices (q : ℝ) ≤ 1 by exact_mod_cast this
+    have hxq : x - (q : ℝ) ∈ Icc 0 1 := hA.subset_Icc_zero_one hqA
+    grind [hx.2, hxq.1]
+  refine mem_iUnion.2 ⟨⟨q, ⟨hq_lower, hq_upper⟩⟩, ?_⟩
+  simpa [translate] using hqA
+
+theorem IsVitali.measure_ne_zero {A : Set ℝ} (hA : IsVitali A) : measure A ≠ 0 := by
   by_contra hzero
   suffices hcontra : (1 : ℝ≥0∞) ≤ 0 by simp at hcontra
   calc
     (1 : ℝ≥0∞) = measure (Icc 0 1) := measure_Icc_zero_one.symm
-    _ ≤ measure (⋃ q : (Icc (-1) 1 : Set ℚ), translate vitaliSet (q : ℚ)) := by
-      exact measure_mono Icc_zero_one_subset_iUnion_translate_vitaliSet
-    _ ≤ ∑' q : (Icc (-1) 1 : Set ℚ), measure (translate vitaliSet (q : ℚ)) :=
+    _ ≤ measure (⋃ q : (Icc (-1) 1 : Set ℚ), translate A (q : ℚ)) := by
+      exact measure_mono hA.Icc_zero_one_subset_iUnion_translate
+    _ ≤ ∑' q : (Icc (-1) 1 : Set ℚ), measure (translate A (q : ℚ)) :=
       measure_iUnion_le_countable _
     _ = 0 := by simp [measure_translate, hzero]
 
@@ -149,104 +115,178 @@ theorem translate_subset_Icc_zero_two {E : Set ℝ} (hE : E ⊆ Icc 0 1) (c : �
   intro x hx
   grind [(hE hx).1, (hE hx).2]
 
-theorem disjoint_translate_of_subset_vitaliSet {E : Set ℝ} (hE : E ⊆ vitaliSet)
+theorem IsVitali.disjoint_translate_of_subset {A E : Set ℝ} (hA : IsVitali A) (hE : E ⊆ A)
     {q r : ℚ} (hqr : q ≠ r) :
     translate E q ∩ translate E r = ∅ := by
   ext x
   constructor
   · intro hx
-    rcases hx with ⟨hxq, hxr⟩
-    let y : (Icc 0 1 : Set ℝ) := ⟨x - q, vitaliSet_subset_Icc_zero_one (hE hxq)⟩
-    let z : (Icc 0 1 : Set ℝ) := ⟨x - r, vitaliSet_subset_Icc_zero_one (hE hxr)⟩
-    have hyz : (y : ℝ) = (z : ℝ) := congrArg Subtype.val <|
-        (existsUnique_mem_vitaliSet_rationalRel y).unique
-          ⟨hE hxq, rationalRel_refl _⟩ <| by
-      refine ⟨hE hxr, ⟨r - q, ?_⟩⟩
-      calc
-        (x - q) - (x - r) = r - q := by ring
-        _ = ((r - q : ℚ) : ℝ) := by simp
-    have hxy : x - q = x - r := by simpa [y, z] using hyz
-    exact (hqr (Rat.cast_inj.mp (by grind : (q : ℝ) = r))).elim
+    have hdisj := hA.pairwise_disjoint_translates hqr
+    have hxA : x ∈ translate A q ∩ translate A r := ⟨hE hx.1, hE hx.2⟩
+    rw [hdisj] at hxA
+    exact hxA
   · simp
 
-theorem measure_eq_zero_of_measurableSet_subset_vitaliSet {E : Set ℝ}
-    (hE : MeasurableSet E) (hEV : E ⊆ vitaliSet) : measure E = 0 := by
+theorem IsVitali.measure_eq_zero_of_measurableSet_subset {A E : Set ℝ} (hA : IsVitali A)
+    (hE : MeasurableSet E) (hEA : E ⊆ A) : measure E = 0 := by
   let ι : Set ℚ := Ioc 0 1
-  let A : ι → Set ℝ := fun q ↦ translate E (q : ℚ)
-  have hAdisj : Pairwise (Disjoint on A) := by
+  let B : ι → Set ℝ := fun q ↦ translate E (q : ℚ)
+  have hBdisj : Pairwise (Disjoint on B) := by
     intro q r hqr
-    suffices  A q ∩ A r = ∅ from Set.disjoint_iff_inter_eq_empty.2 this
-    exact disjoint_translate_of_subset_vitaliSet hEV fun h ↦ hqr (Subtype.ext h)
-  have hAsub : ⋃ n, A n ⊆ Icc 0 2 := by
+    suffices B q ∩ B r = ∅ from Set.disjoint_iff_inter_eq_empty.2 this
+    exact hA.disjoint_translate_of_subset hEA fun h ↦ hqr (Subtype.ext h)
+  have hBsub : ⋃ q, B q ⊆ Icc 0 2 := by
     intro x hx
     rcases mem_iUnion.1 hx with ⟨q, hq⟩
     exact translate_subset_Icc_zero_two
-      (hEV.trans vitaliSet_subset_Icc_zero_one) (q : ℝ)
-      (by exact_mod_cast le_of_lt q.2.1) (by exact_mod_cast q.2.2) (by simpa [A] using hq)
+      (hEA.trans hA.subset_Icc_zero_one) (q : ℝ)
+      (by exact_mod_cast le_of_lt q.2.1)
+      (by exact_mod_cast q.2.2)
+      (by simpa [B] using hq)
   by_contra hE0
   suffices hcontra : (∞ : ℝ≥0∞) ≤ 2 by simp at hcontra
   calc
     ∞ = ∑' _ : ι, measure E := (ENNReal.tsum_const_eq_top_of_ne_zero hE0).symm
-    _ = ∑' q : ι, measure (A q) := by
+    _ = ∑' q : ι, measure (B q) := by
       congr with q
-      simpa [A] using (measure_translate E (q : ℚ)).symm
-    _ = measure (⋃ q, A q) := (measure_iUnion_countable hAdisj (fun q ↦ hE.translate _)).symm
-    _ ≤ measure (Icc 0 2) := measure_mono hAsub
+      simpa [B] using (measure_translate E (q : ℚ)).symm
+    _ = measure (⋃ q, B q) := (measure_iUnion_countable hBdisj (fun q ↦ hE.translate _)).symm
+    _ ≤ measure (Icc 0 2) := measure_mono hBsub
     _ = 2 := by simpa using measure_Icc 0 2
 
-theorem not_measurableSet_vitaliSet : ¬ MeasurableSet vitaliSet :=
-  fun h ↦
-    measure_vitaliSet_ne_zero <| measure_eq_zero_of_measurableSet_subset_vitaliSet h subset_rfl
+theorem IsVitali.not_measurableSet {A : Set ℝ} (hA : IsVitali A) : ¬ MeasurableSet A :=
+  fun h ↦ hA.measure_ne_zero <| hA.measure_eq_zero_of_measurableSet_subset h subset_rfl
 
-theorem exists_not_measurableSet : ∃ A : Set ℝ, ¬ MeasurableSet A :=
-  ⟨vitaliSet, not_measurableSet_vitaliSet⟩
-
-theorem measure_compl_vitaliSet_eq_one : measure (Icc 0 1 \ vitaliSet) = 1 := by
+theorem IsVitali.measure_compl_eq_one {A : Set ℝ} (hA : IsVitali A) :
+    measure (Icc 0 1 \ A) = 1 := by
   refine le_antisymm ?_ ?_
   · calc
-      measure (Icc 0 1 \ vitaliSet) ≤ measure (Icc 0 1) := measure_mono diff_subset
+      measure (Icc 0 1 \ A) ≤ measure (Icc 0 1) := measure_mono diff_subset
       _ = 1 := measure_Icc_zero_one
   by_contra hlt
-  suffices hcontra : measure (Icc 0 1 \ vitaliSet) = 1 from (ne_of_lt (lt_of_not_ge hlt)) hcontra
-  rcases exists_measurable_superset_measure_eq (Icc 0 1 \ vitaliSet) with
+  suffices hcontra : measure (Icc 0 1 \ A) = 1 from (ne_of_lt (lt_of_not_ge hlt)) hcontra
+  rcases exists_measurable_superset_measure_eq (Icc 0 1 \ A) with
     ⟨E', hE', hE'meas, hE'eq⟩
   let F : Set ℝ := E' ∩ Icc 0 1
-  have hBsubF : Icc 0 1 \ vitaliSet ⊆ F := fun x hx => ⟨hE' hx, hx.1⟩
-  have hFeq : measure F = measure (Icc 0 1 \ vitaliSet) := by
+  have hBsubF : Icc 0 1 \ A ⊆ F := fun x hx => ⟨hE' hx, hx.1⟩
+  have hFeq : measure F = measure (Icc 0 1 \ A) := by
     refine le_antisymm ?_ (measure_mono hBsubF)
     calc
       measure F ≤ measure E' := measure_mono Set.inter_subset_left
-      _ = measure (Icc 0 1 \ vitaliSet) := hE'eq
+      _ = measure (Icc 0 1 \ A) := hE'eq
   let E : Set ℝ := Icc 0 1 \ F
   have hEmeas : MeasurableSet E :=
     (measurableSet_Icc 0 1).diff (hE'meas.inter (measurableSet_Icc 0 1))
-  have hEsubV : E ⊆ vitaliSet := by grind
+  have hEsubA : E ⊆ A := by
+    intro x hx
+    by_contra hxA
+    have hxdiff : x ∈ Icc 0 1 \ A := ⟨hx.1, hxA⟩
+    have hxF : x ∈ F := ⟨hE' hxdiff, hx.1⟩
+    exact hx.2 hxF
   have hEF : E ∩ F = ∅ := Set.disjoint_iff_inter_eq_empty.1 (by grind)
   calc
-    measure (Icc 0 1 \ vitaliSet) = measure F := hFeq.symm
+    measure (Icc 0 1 \ A) = measure F := hFeq.symm
     _ = measure E + measure F := by
-      simp [measure_eq_zero_of_measurableSet_subset_vitaliSet hEmeas hEsubV]
+      simp [hA.measure_eq_zero_of_measurableSet_subset hEmeas hEsubA]
     _ = measure (E ∪ F) := by
       rw [← measure_union hEF hEmeas]
     _ = measure (Icc 0 1) := by
-      congr 1
-      grind
+      rw [Set.diff_union_of_subset Set.inter_subset_right]
     _ = 1 := measure_Icc_zero_one
 
-theorem vitaliSet_compl_nonadditive :
-    measure (Icc 0 1) ≠ measure vitaliSet + measure (Icc 0 1 \ vitaliSet) := by
+theorem IsVitali.compl_nonadditive {A : Set ℝ} (hA : IsVitali A) :
+    measure (Icc 0 1) ≠ measure A + measure (Icc 0 1 \ A) := by
   apply ne_of_lt
   calc
     measure (Icc 0 1) = 1 := measure_Icc_zero_one
-    _ < measure vitaliSet + 1 := by
-      simpa [add_comm] using ENNReal.lt_add_right (by simp) measure_vitaliSet_ne_zero
-    _ = measure vitaliSet + measure (Icc 0 1 \ vitaliSet) := by
-      rw [measure_compl_vitaliSet_eq_one]
+    _ < measure A + 1 := by
+      simpa [add_comm] using ENNReal.lt_add_right (by simp) hA.measure_ne_zero
+    _ = measure A + measure (Icc 0 1 \ A) := by
+      rw [hA.measure_compl_eq_one]
+
+def rationalRel (x y : ℝ) : Prop := ∃ q : ℚ, x - y = (q : ℝ)
+
+theorem rationalRel_refl (x : ℝ) : rationalRel x x := ⟨0, by simp⟩
+
+theorem rationalRel_symm {x y : ℝ} (h : rationalRel x y) : rationalRel y x := by
+  rcases h with ⟨q, hq⟩
+  refine ⟨-q, ?_⟩
+  simpa [sub_eq_add_neg, add_assoc, add_left_comm, add_comm] using congrArg Neg.neg hq
+
+theorem rationalRel_trans {x y z : ℝ} (hxy : rationalRel x y) (hyz : rationalRel y z) :
+    rationalRel x z := by
+  rcases hxy with ⟨q1, hq1⟩
+  rcases hyz with ⟨q2, hq2⟩
+  refine ⟨q1 + q2, ?_⟩
+  calc
+    x - z = (x - y) + (y - z) := by ring
+    _ = (q1 : ℝ) + (q2 : ℝ) := by rw [hq1, hq2]
+    _ = ((q1 + q2 : ℚ) : ℝ) := by simp
+
+def rationalRelSetoid : Setoid ℝ where
+  r x y := rationalRel x y
+  iseqv := ⟨fun x ↦ rationalRel_refl x, rationalRel_symm, rationalRel_trans⟩
+
+local instance : Setoid ℝ := rationalRelSetoid
+
+theorem exists_rationalRel_mem_Icc_zero_one (x : ℝ) :
+    ∃ y : (Icc 0 1 : Set ℝ), rationalRel x y := by
+  obtain ⟨q, hq_left, hq_right⟩ := exists_rat_btwn (sub_one_lt x)
+  refine ⟨⟨x - q, by grind⟩, ⟨q, by ring⟩⟩
+
+theorem exists_subtype_mk_eq_quotient (q : Quotient rationalRelSetoid) :
+    ∃ y : (Icc 0 1 : Set ℝ), ⟦(y : ℝ)⟧ = q := by
+  refine Quotient.inductionOn q ?_
+  intro x
+  rcases exists_rationalRel_mem_Icc_zero_one x with ⟨y, hy⟩
+  exact ⟨y, (Quotient.sound hy).symm⟩
+
+def chosenVitaliPoint (q : Quotient rationalRelSetoid) : (Icc 0 1 : Set ℝ) :=
+  Classical.choose (exists_subtype_mk_eq_quotient q)
+
+theorem mk_chosenVitaliPoint (q : Quotient rationalRelSetoid) :
+    ⟦(chosenVitaliPoint q : ℝ)⟧ = q :=
+  Classical.choose_spec (exists_subtype_mk_eq_quotient q)
+
+def chosenVitali : Set ℝ :=
+  Set.range fun q : Quotient rationalRelSetoid ↦ (chosenVitaliPoint q : ℝ)
+
+theorem chosenVitali_subset_Icc_zero_one : chosenVitali ⊆ Icc 0 1 := by
+  rintro x ⟨q, rfl⟩
+  exact (chosenVitaliPoint q).2
+
+theorem eq_chosenVitaliPoint_of_mem_chosenVitali_of_rationalRel {x y : ℝ}
+    (hy : y ∈ chosenVitali) (hxy : rationalRel x y) :
+    y = chosenVitaliPoint ⟦x⟧ := by
+  rcases hy with ⟨q, rfl⟩
+  have hqx :=
+    calc
+      q = ⟦(chosenVitaliPoint q : ℝ)⟧ := by
+        simpa using (mk_chosenVitaliPoint q).symm
+      _ = ⟦x⟧ := by simpa using (Quotient.sound hxy).symm
+  exact congrArg Subtype.val (congrArg chosenVitaliPoint hqx)
+
+theorem existsUnique_rational_chosenVitali (x : ℝ) : ∃! q : ℚ, x - q ∈ chosenVitali := by
+  rcases Quotient.exact (mk_chosenVitaliPoint ⟦x⟧).symm with ⟨q, hq⟩
+  refine ⟨q, ⟨⟦x⟧, by grind⟩, ?_⟩
+  intro r hr
+  have hz : x - r = chosenVitaliPoint ⟦x⟧ :=
+    eq_chosenVitaliPoint_of_mem_chosenVitali_of_rationalRel hr ⟨r, by ring⟩
+  exact Rat.cast_inj.mp <| calc
+    (r : ℝ) = x - (chosenVitaliPoint ⟦x⟧ : ℝ) := by grind
+    _ = (q : ℝ) := by grind
+
+theorem isVitali_chosenVitali : IsVitali chosenVitali :=
+  ⟨existsUnique_rational_chosenVitali, chosenVitali_subset_Icc_zero_one⟩
+
+theorem exists_not_measurableSet : ∃ A : Set ℝ, ¬ MeasurableSet A :=
+  ⟨chosenVitali, isVitali_chosenVitali.not_measurableSet⟩
 
 theorem exists_disjoint_nonadditive :
     ∃ A B : Set ℝ, A ∩ B = ∅ ∧ measure (A ∪ B) ≠ measure A + measure B := by
-  refine ⟨vitaliSet, Icc 0 1 \ vitaliSet, by simp, ?_⟩
-  simpa [Set.union_diff_cancel vitaliSet_subset_Icc_zero_one] using vitaliSet_compl_nonadditive
+  refine ⟨chosenVitali, Icc 0 1 \ chosenVitali, by simp, ?_⟩
+  simpa [Set.union_diff_cancel chosenVitali_subset_Icc_zero_one] using
+    isVitali_chosenVitali.compl_nonadditive
 
 end Real
 

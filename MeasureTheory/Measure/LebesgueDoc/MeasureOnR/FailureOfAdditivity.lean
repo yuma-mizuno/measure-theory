@@ -55,51 +55,29 @@ MTI.Real.measure_translate
 
 :::::definitionBox "Vitali Set" (ja := "ヴィタリ集合")
 ::::localized
-We define a set $`V \subseteq \mathbb{R}` by choosing one representative from each
-rational-translation equivalence class in $`[0,1]`.
+A set $`A \subseteq \mathbb{R}` is called a _Vitali set_ if
+$`A \subseteq [0,1]` and, for every $`x \in \mathbb{R}` there exists a unique rational number
+$`q` such that $`x - q \in A`.
 :::locale "ja"
-$`[0,1]` の点を有理数平行移動による同値類ごとにひとつずつ選んで、
-集合 $`V \subseteq \mathbb{R}` を定める。
+集合 $`A \subseteq \mathbb{R}` が_ヴィタリ集合_であるとは、
+$`A \subseteq [0,1]` を満たし、さらに任意の $`x \in \mathbb{R}` に対して
+$`x - q \in A` を満たす有理数 $`q` がただひとつ存在することをいう。
 :::
 ::::
 :::::
 
 ```leanDecl
-MTI.Real.vitaliSet
+MTI.Real.IsVitali
 ```
 
 :::::lemmaBox
 ::::localized
-The set $`V` defined above satisfies $`V \subseteq [0,1]`, and it contains exactly one
-representative from each rational-translation equivalence class in $`[0,1]`.
+If $`A`$ is a Vitali set, then
+$$`m(A) \neq 0.`
 :::locale "ja"
-上で定めた集合 $`V` は $`V \subseteq [0,1]` を満たし、さらに $`[0,1]` の各点の
-有理数平行移動による同値類からちょうどひとつずつ代表元を含む。
-:::
-::::
-:::::
-
-```leanDecl
-MTI.Real.vitaliSet_subset_Icc_zero_one
-MTI.Real.existsUnique_mem_vitaliSet_rationalRel
-```
-
-::::localized
-A set with the properties stated in the lemma above is called a _Vitali set_.
-The set $`V` is a Vitali set defined using the axiom of choice.
-:::locale "ja"
-上の補題で述べた性質を持つ集合を_ヴィタリ集合_といいます。
-$`V` はヴィタリ集合を選択公理を用いて定義したものです。
-:::
-::::
-
-:::::lemmaBox
-::::localized
-The set $`V` satisfies
-$$`m(V) \neq 0.`
-:::locale "ja"
+$`A` がヴィタリ集合ならば、
 $$`
-  m(V) \neq 0
+  m(A) \neq 0
 `
 が成り立つ。
 :::
@@ -107,16 +85,16 @@ $$`
 :::::
 
 ```leanDecl
-MTI.Real.Icc_zero_one_subset_iUnion_translate_vitaliSet
-MTI.Real.measure_vitaliSet_ne_zero
+MTI.Real.IsVitali.Icc_zero_one_subset_iUnion_translate
+MTI.Real.IsVitali.measure_ne_zero
 ```
 
 :::::lemmaBox
 ::::localized
-For every measurable set $`E \subseteq \mathbb{R}`, if $`E \subseteq V`, then
+If $`A`$ is a Vitali set and $`E \subseteq A`$ is measurable, then
 $$`m(E) = 0.`
 :::locale "ja"
-任意の可測集合 $`E \subseteq \mathbb{R}` について、$`E \subseteq V` ならば
+$`A` がヴィタリ集合で、$`E \subseteq A` が可測ならば、
 $$`
   m(E) = 0
 `
@@ -126,71 +104,113 @@ $$`
 :::::
 
 ```leanDecl
-MTI.Real.disjoint_translate_of_subset_vitaliSet
-MTI.Real.measure_eq_zero_of_measurableSet_subset_vitaliSet
+MTI.Real.IsVitali.measure_eq_zero_of_measurableSet_subset
+```
+
+:::::theoremBox "Nonmeasurability of Vitali Sets" (ja := "ヴィタリ集合は非可測")
+::::localized
+If $`A`$ is a Vitali set, then $`A`$ is not measurable.
+:::locale "ja"
+$`A` がヴィタリ集合ならば、$`A` は可測ではない。
+:::
+::::
+:::::
+
+```leanDecl
+MTI.Real.IsVitali.not_measurableSet
+```
+
+:::::lemmaBox
+::::localized
+If $`A`$ is a Vitali set, then
+$$`m([0,1] \setminus A) = 1.`
+:::locale "ja"
+$`A` がヴィタリ集合ならば、
+$$`
+  m([0,1] \setminus A) = 1
+`
+が成り立つ。
+:::
+::::
+:::::
+
+```leanDecl
+MTI.Real.IsVitali.measure_compl_eq_one
+```
+
+:::::theoremBox "Failure of Additivity for Vitali Sets" (ja := "ヴィタリ集合に対する加法性の破綻")
+::::localized
+If $`A`$ is a Vitali set, then
+$$`m([0,1]) \neq m(A) + m([0,1] \setminus A).`
+:::locale "ja"
+$`A` がヴィタリ集合ならば、
+$$`
+  m([0,1]) \neq m(A) + m([0,1] \setminus A)
+`
+が成り立つ。
+:::
+::::
+:::::
+
+```leanDecl
+MTI.Real.IsVitali.compl_nonadditive
 ```
 
 ::::localized
-Taken together, the previous two lemmas show that the set $`V` cannot be measurable.
+To deduce actual existence statements, it remains only to construct one Vitali set.
 :::locale "ja"
-以上の二つの補題を合わせると、集合 $`V` は可測ではありえないことがわかります。
+これで、実際の存在定理を得るためにはヴィタリ集合をひとつ構成すれば十分です。
 :::
 ::::
+
+:::::definitionBox "Existence of Vitali Sets" (ja := "ヴィタリ集合の存在")
+::::localized
+Consider the equivalence relation on $`\mathbb{R}` given by rational translation.
+Every equivalence class meets $`[0,1]`, so by the axiom of choice we may choose one point in
+$`[0,1]` from each class. Let $`V \subseteq \mathbb{R}` be the set of all chosen representatives.
+:::locale "ja"
+$`\mathbb{R}` 上の有理数平行移動による同値関係を考える。各同値類は
+$`[0,1]` と交わるので、選択公理により各同値類から $`[0,1]` に入る点を
+ひとつずつ選ぶことができる。そのようにして選んだ代表元全体からなる集合を
+$`V \subseteq \mathbb{R}` とする。
+:::
+::::
+:::::
+
+```leanDecl
+MTI.Real.exists_rationalRel_mem_Icc_zero_one
+MTI.Real.exists_subtype_mk_eq_quotient
+MTI.Real.chosenVitaliPoint
+MTI.Real.chosenVitali
+```
+
+:::::lemmaBox
+::::localized
+The set $`V`$ constructed above is a Vitali set.
+:::locale "ja"
+上で構成した集合 $`V` はヴィタリ集合である。
+:::
+::::
+:::::
+
+```leanDecl
+MTI.Real.chosenVitali_subset_Icc_zero_one
+MTI.Real.existsUnique_rational_chosenVitali
+MTI.Real.isVitali_chosenVitali
+```
 
 :::::theoremBox "Existence of Nonmeasurable Sets" (ja := "非可測集合の存在")
 ::::localized
-The set $`V` is not measurable.
+There exists a set $`A \subseteq \mathbb{R}` that is not measurable.
 :::locale "ja"
-集合 $`V` は可測ではない。
+可測でない集合 $`A \subseteq \mathbb{R}` が存在する。
 :::
 ::::
 :::::
 
 ```leanDecl
-MTI.Real.not_measurableSet_vitaliSet
+MTI.Real.exists_not_measurableSet
 ```
-
-:::::lemmaBox
-::::localized
-The set $`[0,1] \setminus V` satisfies
-$$`m([0,1] \setminus V) = 1.`
-:::locale "ja"
-$$`
-  m([0,1] \setminus V) = 1
-`
-が成り立つ。
-:::
-::::
-:::::
-
-```leanDecl
-MTI.Real.measure_compl_vitaliSet_eq_one
-```
-
-:::::lemmaBox
-::::localized
-The decomposition of $`[0,1]` by $`V` satisfies
-$$`m([0,1]) \neq m(V) + m([0,1] \setminus V).`
-:::locale "ja"
-集合 $`V` による $`[0,1]` の分解について
-$$`
-  m([0,1]) \neq m(V) + m([0,1] \setminus V)
-`
-が成り立つ。
-:::
-::::
-:::::
-
-```leanDecl
-MTI.Real.vitaliSet_compl_nonadditive
-```
-
-::::localized
-In particular, there exist disjoint sets for which additivity fails.
-:::locale "ja"
-したがって、加法性を満たさない交わらない集合の組が存在します。
-:::
-::::
 
 :::::theoremBox "Failure of Additivity" (ja := "加法性の破綻")
 ::::localized

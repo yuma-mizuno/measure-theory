@@ -209,9 +209,9 @@ theorem measure_compl_vitaliSet_eq_one : measure (Icc 0 1 \ vitaliSet) = 1 := by
   by_contra hlt
   suffices hcontra : measure (Icc 0 1 \ vitaliSet) = 1 from (ne_of_lt (lt_of_not_ge hlt)) hcontra
   rcases exists_measurable_superset_measure_eq (Icc 0 1 \ vitaliSet) with
-    ⟨E', hBE', hE'meas, hE'eq⟩
+    ⟨E', hE', hE'meas, hE'eq⟩
   let F : Set ℝ := E' ∩ Icc 0 1
-  have hBsubF : Icc 0 1 \ vitaliSet ⊆ F := fun x hx => ⟨hBE' hx, hx.1⟩
+  have hBsubF : Icc 0 1 \ vitaliSet ⊆ F := fun x hx => ⟨hE' hx, hx.1⟩
   have hFeq : measure F = measure (Icc 0 1 \ vitaliSet) := by
     refine le_antisymm ?_ (measure_mono hBsubF)
     calc

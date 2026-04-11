@@ -49,7 +49,6 @@ $$`
 
 ```leanDecl
 MTI.Real.translate
-MTI.Real.MeasurableSet.translate
 MTI.Real.measure_translate_le
 MTI.Real.measure_translate
 ```

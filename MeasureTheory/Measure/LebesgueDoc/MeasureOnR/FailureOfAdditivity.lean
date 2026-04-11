@@ -186,9 +186,9 @@ MTI.Real.chosenVitali
 
 :::::lemmaBox
 ::::localized
-The set $`V`$ constructed above is a Vitali set.
+The set $`V`$ defined above is a Vitali set.
 :::locale "ja"
-上で構成した集合 $`V` はヴィタリ集合である。
+上で定義した集合 $`V` はヴィタリ集合である。
 :::
 ::::
 :::::

@@ -13,9 +13,12 @@ namespace Real
 def IsCaratheodory (A : Set ℝ) : Prop :=
   ∀ B : Set ℝ, measure B = measure (B ∩ A) + measure (B \ A)
 
-theorem measure_c_union {A₁ A₂ : Set ℝ} (h : A₁ ∩ A₂ ⊆ ∅) (h₁ : IsCaratheodory A₁) :
+theorem measure_c_union {A₁ A₂ : Set ℝ} (h : A₁ ∩ A₂ = ∅) (h₁ : IsCaratheodory A₁) :
     measure (A₁ ∪ A₂) = measure A₁ + measure A₂ := by
-  rw [h₁, Set.union_inter_cancel_left, union_diff_cancel_left h]
+  calc
+    measure (A₁ ∪ A₂) = measure ((A₁ ∪ A₂) ∩ A₁) + measure ((A₁ ∪ A₂) \ A₁) := h₁ _
+    _ = measure A₁ + measure ((A₁ ∪ A₂) \ A₁) := by rw [Set.union_inter_cancel_left]
+    _ = measure A₁ + measure A₂ := by rw [union_diff_cancel_left h.subset]
 
 theorem isCaratheodory_of_le {A : Set ℝ} (h : ∀ B, measure (B ∩ A) + measure (B \ A) ≤ measure B) :
     IsCaratheodory A := by
@@ -33,9 +36,12 @@ theorem measure_c_iUnion_finite
     simp [measure_empty]
   | succ n ih =>
     rw [biUnion_lt_succ, Finset.sum_range_succ, Set.union_comm, ← ih]
-    rw [measure_c_union _ (hA n), add_comm]
-    intro a
-    simpa using fun (h₁ : a ∈ A n) i (hi : i < n) h₂ ↦ (hdA (ne_of_gt hi)).le_bot ⟨h₁, h₂⟩
+    have hinter : A n ∩ ⋃ i, ⋃ (_ : i < n), A i = ∅ := by
+      apply Set.disjoint_iff_inter_eq_empty.1
+      rw [Set.disjoint_iUnion₂_right]
+      intro i hi
+      apply hdA (ne_of_gt hi)
+    rw [measure_c_union hinter (hA n), add_comm]
 
 theorem isCaratheodory_empty : IsCaratheodory (∅ : Set ℝ) := by
   intro B
@@ -64,19 +70,27 @@ theorem IsCaratheodory.union {A B : Set ℝ} (hA : IsCaratheodory A) (hB : IsCar
   have : (C \ A) \ B = C \ (A ∪ B) := by grind
   grind only
 
-theorem measure_inter_union {A₁ A₂ : Set ℝ} (h : A₁ ∩ A₂ ⊆ ∅) (h₁ : IsCaratheodory A₁) (B : Set ℝ) :
+theorem measure_inter_union {A₁ A₂ : Set ℝ} (h : A₁ ∩ A₂ = ∅) (h₁ : IsCaratheodory A₁) (B : Set ℝ) :
     measure (B ∩ (A₁ ∪ A₂)) = measure (B ∩ A₁) + measure (B ∩ A₂) := by
-  rw [h₁, Set.inter_assoc, Set.union_inter_cancel_left, inter_diff_assoc, union_diff_cancel_left h]
+  calc
+    measure (B ∩ (A₁ ∪ A₂)) =
+        measure (B ∩ (A₁ ∪ A₂) ∩ A₁) + measure ((B ∩ (A₁ ∪ A₂)) \ A₁) := h₁ _
+    _ = measure (B ∩ A₁) + measure ((B ∩ (A₁ ∪ A₂)) \ A₁) := by
+      rw [Set.inter_assoc, Set.union_inter_cancel_left]
+    _ = measure (B ∩ A₁) + measure (B ∩ A₂) := by
+      rw [inter_diff_assoc, union_diff_cancel_left h.subset]
 
 theorem isCaratheodory_sum {A : ℕ → Set ℝ} (h : ∀ i, IsCaratheodory (A i))
     (hd : Pairwise (Disjoint on A)) {t : Set ℝ} :
     ∀ {n}, (∑ i ∈ Finset.range n, measure (t ∩ A i)) = measure (t ∩ ⋃ i < n, A i)
   | 0 => by simp
   | Nat.succ n => by
+    have hinter : A n ∩ ⋃ i, ⋃ (_ : i < n), A i = ∅ := by
+      simp only [inter_iUnion₂, iUnion_eq_empty]
+      intro i hi
+      apply Disjoint.inter_eq (hd (ne_of_gt hi))
     rw [biUnion_lt_succ, Finset.sum_range_succ, Set.union_comm, isCaratheodory_sum h hd,
-      measure_inter_union _ (h n), add_comm]
-    intro a
-    simpa using fun (h₁ : a ∈ A n) i (hi : i < n) h₂ ↦ (hd (ne_of_gt hi)).le_bot ⟨h₁, h₂⟩
+      measure_inter_union hinter (h n), add_comm]
 
 theorem IsCaratheodory.compl {A : Set ℝ} : IsCaratheodory A → IsCaratheodory Aᶜ := by
   intro hA C

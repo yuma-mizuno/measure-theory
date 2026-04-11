@@ -7,6 +7,7 @@ import MeasureTheory.Measure.LebesgueDoc.MeasureOnR.MeasurableSets
 import MeasureTheory.Measure.LebesgueDoc.MeasureOnR.CaratheodoryCriterion
 import MeasureTheory.Measure.LebesgueDoc.MeasureOnR.CountableAdditivity
 import MeasureTheory.Measure.LebesgueDoc.MeasureOnR.ApproximationByMeasurableSupersets
+import MeasureTheory.Measure.LebesgueDoc.MeasureOnR.FailureOfAdditivity
 import MeasureTheory.Measure.LebesgueDoc.MeasureOnR.SimpleFunctions
 import MeasureTheory.Measure.LebesgueDoc.MeasureOnR.Lintegral
 import MeasureTheory.Measure.LebesgueDoc.MeasureOnR.Integral
@@ -82,7 +83,7 @@ is one of the main reasons why it becomes so useful later in integration theory.
 実数の任意の部分集合 $`A` に、*ルベーグ外測度* $`m(A)` という値を割り当てます。これは
 $`m([0, 1]) = 1` を満たすという意味で区間の長さの一般化になっており、一般の実数集合の「大きさ」を測っています。
 
-しかし、互いに素な二つの集合 $`A` と $`B` について、$`m(A ∪ B) \neq m(A) + m(B)` となりうることが知られています。
+しかし、交わらない二つの集合 $`A` と $`B` について、$`m(A ∪ B) \neq m(A) + m(B)` となりうることが知られています。
 これは、「大きさ」という概念に期待したい基本的な性質である加法性が成り立たない場合があることを意味しており、問題になります。
 
 そこで、すべての集合について加法性を要求することはやめます。
@@ -98,6 +99,7 @@ $`m([0, 1]) = 1` を満たすという意味で区間の長さの一般化にな
 {include 2 MeasureTheory.Measure.LebesgueDoc.MeasureOnR.CaratheodoryCriterion}
 {include 2 MeasureTheory.Measure.LebesgueDoc.MeasureOnR.CountableAdditivity}
 {include 2 MeasureTheory.Measure.LebesgueDoc.MeasureOnR.ApproximationByMeasurableSupersets}
+{include 2 MeasureTheory.Measure.LebesgueDoc.MeasureOnR.FailureOfAdditivity}
 
 # Integration on ℝ
 %%%

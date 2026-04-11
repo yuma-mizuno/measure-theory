@@ -70,7 +70,7 @@ theorem MeasurableSet.isCaratheodory {A : Set ℝ} (h : MeasurableSet A) :
   | compl' A hA ih => apply ih.compl
   | iUnion' A hA ih => apply isCaratheodory_iUnion ih
 
-theorem measure_union {A₁ A₂ : Set ℝ} (h : A₁ ∩ A₂ ⊆ ∅) (h₁ : MeasurableSet A₁) :
+theorem measure_union {A₁ A₂ : Set ℝ} (h : A₁ ∩ A₂ = ∅) (h₁ : MeasurableSet A₁) :
     measure (A₁ ∪ A₂) = measure (A₁) + measure (A₂) :=
   measure_c_union h (h₁.isCaratheodory)
 

@@ -171,10 +171,7 @@ theorem disjoint_translate_of_subset_vitaliSet {E : Set ℝ} (hE : E ⊆ vitaliS
 
 theorem measure_eq_zero_of_measurableSet_subset_vitaliSet {E : Set ℝ}
     (hE : MeasurableSet E) (hEV : E ⊆ vitaliSet) : measure E = 0 := by
-  by_contra hE0
   let ι : Set ℚ := Ioc 0 1
-  haveI : Infinite ι := by
-    simpa [ι] using (Set.Ioc.infinite (by norm_num : (0 : ℚ) < 1))
   let A : ι → Set ℝ := fun q ↦ translate E (q : ℚ)
   have hAdisj : Pairwise (Disjoint on A) := by
     intro q r hqr
@@ -186,6 +183,7 @@ theorem measure_eq_zero_of_measurableSet_subset_vitaliSet {E : Set ℝ}
     exact translate_subset_Icc_zero_two
       (hEV.trans vitaliSet_subset_Icc_zero_one) (q : ℝ)
       (by exact_mod_cast le_of_lt q.2.1) (by exact_mod_cast q.2.2) (by simpa [A] using hq)
+  by_contra hE0
   suffices hcontra : (∞ : ℝ≥0∞) ≤ 2 by simp at hcontra
   calc
     ∞ = ∑' _ : ι, measure E := (ENNReal.tsum_const_eq_top_of_ne_zero hE0).symm

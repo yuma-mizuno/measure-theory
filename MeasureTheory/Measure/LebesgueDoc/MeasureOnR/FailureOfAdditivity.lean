@@ -117,7 +117,7 @@ MTI.Real.measure_vitaliSet_ne_zero
 For every measurable set $`E \subseteq \mathbb{R}`, if $`E \subseteq V`, then
 $$`m(E) = 0.`
 :::locale "ja"
-任意の可測集合 $`E \subseteq \mathbb{R}` が $`E \subseteq V` を満たすならば、
+任意の可測集合 $`E \subseteq \mathbb{R}` について、$`E \subseteq V` ならば
 $$`
   m(E) = 0
 `

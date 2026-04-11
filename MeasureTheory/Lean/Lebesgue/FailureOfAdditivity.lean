@@ -151,20 +151,23 @@ theorem translate_subset_Icc_zero_two {E : Set ℝ} (hE : E ⊆ Icc 0 1) (c : �
 
 theorem disjoint_translate_of_subset_vitaliSet {E : Set ℝ} (hE : E ⊆ vitaliSet)
     {q r : ℚ} (hqr : q ≠ r) :
-    Disjoint (translate E q) (translate E r) := by
-  rw [Set.disjoint_left]
-  intro x hxq hxr
-  let y : (Icc 0 1 : Set ℝ) := ⟨x - q, vitaliSet_subset_Icc_zero_one (hE hxq)⟩
-  let z : (Icc 0 1 : Set ℝ) := ⟨x - r, vitaliSet_subset_Icc_zero_one (hE hxr)⟩
-  have hyz : (y : ℝ) = (z : ℝ) := congrArg Subtype.val <|
-      (existsUnique_mem_vitaliSet_rationalRel y).unique
-        ⟨hE hxq, rationalRel_refl _⟩ <| by
-    refine ⟨hE hxr, ⟨r - q, ?_⟩⟩
-    calc
-      (x - q) - (x - r) = r - q := by ring
-      _ = ((r - q : ℚ) : ℝ) := by simp
-  have hxy : x - q = x - r := by simpa [y, z] using hyz
-  exact hqr (Rat.cast_inj.mp (by grind : (q : ℝ) = r))
+    translate E q ∩ translate E r = ∅ := by
+  ext x
+  constructor
+  · intro hx
+    rcases hx with ⟨hxq, hxr⟩
+    let y : (Icc 0 1 : Set ℝ) := ⟨x - q, vitaliSet_subset_Icc_zero_one (hE hxq)⟩
+    let z : (Icc 0 1 : Set ℝ) := ⟨x - r, vitaliSet_subset_Icc_zero_one (hE hxr)⟩
+    have hyz : (y : ℝ) = (z : ℝ) := congrArg Subtype.val <|
+        (existsUnique_mem_vitaliSet_rationalRel y).unique
+          ⟨hE hxq, rationalRel_refl _⟩ <| by
+      refine ⟨hE hxr, ⟨r - q, ?_⟩⟩
+      calc
+        (x - q) - (x - r) = r - q := by ring
+        _ = ((r - q : ℚ) : ℝ) := by simp
+    have hxy : x - q = x - r := by simpa [y, z] using hyz
+    exact (hqr (Rat.cast_inj.mp (by grind : (q : ℝ) = r))).elim
+  · simp
 
 theorem measure_eq_zero_of_measurableSet_subset_vitaliSet {E : Set ℝ}
     (hE : MeasurableSet E) (hEV : E ⊆ vitaliSet) : measure E = 0 := by
@@ -175,6 +178,7 @@ theorem measure_eq_zero_of_measurableSet_subset_vitaliSet {E : Set ℝ}
   let A : ι → Set ℝ := fun q ↦ translate E (q : ℚ)
   have hAdisj : Pairwise (Disjoint on A) := by
     intro q r hqr
+    suffices  A q ∩ A r = ∅ from Set.disjoint_iff_inter_eq_empty.2 this
     exact disjoint_translate_of_subset_vitaliSet hEV fun h ↦ hqr (Subtype.ext h)
   have hAsub : ⋃ n, A n ⊆ Icc 0 2 := by
     intro x hx
@@ -219,13 +223,13 @@ theorem measure_compl_vitaliSet_eq_one : measure (Icc 0 1 \ vitaliSet) = 1 := by
   have hEmeas : MeasurableSet E :=
     (measurableSet_Icc 0 1).diff (hE'meas.inter (measurableSet_Icc 0 1))
   have hEsubV : E ⊆ vitaliSet := by grind
-  have hdisj : Disjoint E F := by grind
+  have hEF : E ∩ F = ∅ := Set.disjoint_iff_inter_eq_empty.1 (by grind)
   calc
     measure (Icc 0 1 \ vitaliSet) = measure F := hFeq.symm
     _ = measure E + measure F := by
       simp [measure_eq_zero_of_measurableSet_subset_vitaliSet hEmeas hEsubV]
     _ = measure (E ∪ F) := by
-      rw [← measure_union (Set.disjoint_iff_inter_eq_empty.1 hdisj) hEmeas]
+      rw [← measure_union hEF hEmeas]
     _ = measure (Icc 0 1) := by
       congr 1
       grind
@@ -242,8 +246,8 @@ theorem vitaliSet_compl_nonadditive :
       rw [measure_compl_vitaliSet_eq_one]
 
 theorem exists_disjoint_nonadditive :
-    ∃ A B : Set ℝ, Disjoint A B ∧ measure (A ∪ B) ≠ measure A + measure B := by
-  refine ⟨vitaliSet, Icc 0 1 \ vitaliSet, Set.disjoint_sdiff_right, ?_⟩
+    ∃ A B : Set ℝ, A ∩ B = ∅ ∧ measure (A ∪ B) ≠ measure A + measure B := by
+  refine ⟨vitaliSet, Icc 0 1 \ vitaliSet, by simp, ?_⟩
   simpa [Set.union_diff_cancel vitaliSet_subset_Icc_zero_one] using vitaliSet_compl_nonadditive
 
 end Real

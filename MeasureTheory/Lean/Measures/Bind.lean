@@ -94,7 +94,7 @@ theorem lintegral_dirac (a : X) {f : X → ℝ≥0∞} (hf : Measurable f) :
     _ = f a := by simp
 
 inductive Measure.MeasurableGen (X : Type*) [MeasurableSpace X] : Set (Set (Measure X))
-  | proj (A : Set X) (hs : MeasurableSet A) (B : Set ℝ≥0∞) (hB : MeasurableSet B) :
+  | mk (A : Set X) (hs : MeasurableSet A) (B : Set ℝ≥0∞) (hB : MeasurableSet B) :
       Measure.MeasurableGen X ({μ | μ A ∈ B})
 
 instance Measure.instMeasurableSpace : MeasurableSpace (Measure X) :=
@@ -102,7 +102,7 @@ instance Measure.instMeasurableSpace : MeasurableSpace (Measure X) :=
 
 theorem Measure.measurable_coe {A : Set X} (hA : MeasurableSet A) :
     Measurable fun μ : Measure X ↦ μ A :=
-  fun {B} hB ↦ MeasurableSpace.measurableSet_generateFrom (MeasurableGen.proj A hA B hB)
+  fun {B} hB ↦ MeasurableSpace.measurableSet_generateFrom (MeasurableGen.mk A hA B hB)
 
 @[fun_prop]
 theorem Measure.measurable_lintegral {f : X → ℝ≥0∞} (hf : Measurable f) :
@@ -113,15 +113,15 @@ theorem Measure.measurable_lintegral {f : X → ℝ≥0∞} (hf : Measurable f) 
   exact measurable_coe ((SimpleFunc.eapprox f n).measurableSet_preimage _)
 
 theorem measurable_of_measurable_coe (μ : X → Measure Y)
-    (h : ∀ (s : Set Y), MeasurableSet s → Measurable fun x ↦ μ x s) : Measurable μ := by
-  intro s hs
-  induction hs with
-  | basic s hs =>
-    obtain ⟨s, hs, t, ht⟩ := hs
+    (h : ∀ (A : Set Y), MeasurableSet A → Measurable fun x ↦ μ x A) : Measurable μ := by
+  intro A hA
+  induction hA with
+  | basic S hS =>
+    obtain ⟨A, hA, B, hB⟩ := hS
     simp only [preimage_setOf_eq, measurableSet_setOf]
-    exact measurableSet_setOf.mp (h s hs ht)
+    exact measurableSet_setOf.mp (h A hA hB)
   | empty => simp
-  | compl s hs ih =>
+  | compl A hA ih =>
     rw [@preimage_compl]
     apply ih.compl
   | iUnion A hAd ihA =>

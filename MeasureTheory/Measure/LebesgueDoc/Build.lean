@@ -21,24 +21,6 @@ private def cleanGeneratedOutput (dest : System.FilePath) : IO Unit := do
     if ← dir.pathExists then
       IO.FS.removeDirAll dir
 
-def rootRedirectHtml : String := String.intercalate "\n"
-  [ "<!DOCTYPE html>"
-  , "<html lang=\"en\">"
-  , "<head>"
-  , "  <meta charset=\"utf-8\">"
-  , "  <meta http-equiv=\"refresh\" content=\"0; url=./html-multi/\">"
-  , "  <title>Redirecting…</title>"
-  , "</head>"
-  , "<body>"
-  , "  <p><a href=\"./html-multi/\">Open documentation</a></p>"
-  , "</body>"
-  , "</html>"
-  ]
-
-def writeRootRedirect (dest : System.FilePath) : IO Unit := do
-  IO.FS.createDirAll dest
-  IO.FS.writeFile (dest / "index.html") rootRedirectHtml
-
 def runLebesgueDocForLocale (locale : String) (dest : System.FilePath) (args : List String) :
     IO UInt32 := do
   setOutputLocale locale

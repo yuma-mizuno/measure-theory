@@ -72,7 +72,7 @@ MTI.Real.IsVitali
 
 :::::lemmaBox
 ::::localized
-If $`A`$ is a Vitali set, then
+If $`A` is a Vitali set, then
 $$`m(A) \neq 0.`
 :::locale "ja"
 $`A` がヴィタリ集合ならば、
@@ -91,7 +91,7 @@ MTI.Real.IsVitali.measure_ne_zero
 
 :::::lemmaBox
 ::::localized
-If $`A`$ is a Vitali set and $`E \subseteq A`$ is measurable, then
+If $`A` is a Vitali set and $`E \subseteq A` is measurable, then
 $$`m(E) = 0.`
 :::locale "ja"
 $`A` がヴィタリ集合で、$`E \subseteq A` が可測ならば、
@@ -109,7 +109,7 @@ MTI.Real.IsVitali.measure_eq_zero_of_measurableSet_subset
 
 :::::theoremBox "Nonmeasurability of Vitali Sets" (ja := "ヴィタリ集合は非可測")
 ::::localized
-If $`A`$ is a Vitali set, then $`A`$ is not measurable.
+If $`A` is a Vitali set, then $`A` is not measurable.
 :::locale "ja"
 $`A` がヴィタリ集合ならば、$`A` は可測ではない。
 :::
@@ -122,7 +122,7 @@ MTI.Real.IsVitali.not_measurableSet
 
 :::::lemmaBox
 ::::localized
-If $`A`$ is a Vitali set, then
+If $`A` is a Vitali set, then
 $$`m([0,1] \setminus A) = 1.`
 :::locale "ja"
 $`A` がヴィタリ集合ならば、
@@ -140,7 +140,7 @@ MTI.Real.IsVitali.measure_compl_eq_one
 
 :::::theoremBox "Failure of Additivity for Vitali Sets" (ja := "ヴィタリ集合に対する加法性の破綻")
 ::::localized
-If $`A`$ is a Vitali set, then
+If $`A` is a Vitali set, then
 $$`m([0,1]) \neq m(A) + m([0,1] \setminus A).`
 :::locale "ja"
 $`A` がヴィタリ集合ならば、
@@ -186,7 +186,7 @@ MTI.Real.chosenVitali
 
 :::::lemmaBox
 ::::localized
-The set $`V`$ defined above is a Vitali set.
+The set $`V` defined above is a Vitali set.
 :::locale "ja"
 上で定義した集合 $`V` はヴィタリ集合である。
 :::

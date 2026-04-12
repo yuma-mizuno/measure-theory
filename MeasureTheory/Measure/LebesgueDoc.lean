@@ -64,7 +64,7 @@ tag := "measure-on-r"
 
 ::::localized
 To every subset $`A \subseteq \mathbb{R}` we assign a value $`m(A)` called the *Lebesgue outer
-measure*. In the sense that $`m([0,1]) = 1`, it extends the length of an interval and measures the
+measure*. It extends the length of an interval, in the sense that $`m([0,1]) = 1`,  and measures the
 "size" of a general set of real numbers.
 
 However, it is known that there are two disjoint sets $`A` and $`B` such that

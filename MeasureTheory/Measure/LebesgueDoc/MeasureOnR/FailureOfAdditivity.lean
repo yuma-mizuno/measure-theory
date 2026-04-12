@@ -107,6 +107,13 @@ $$`
 MTI.Real.IsVitali.measure_eq_zero_of_measurableSet_subset
 ```
 
+::::localized
+Taken together, the previous two lemmas show that a Vitali set cannot be measurable.
+:::locale "ja"
+以上の二つの補題を合わせると、ヴィタリ集合は可測になりえないとわかります。
+:::
+::::
+
 :::::theoremBox "Nonmeasurability of Vitali Sets" (ja := "ヴィタリ集合は非可測")
 ::::localized
 If $`A` is a Vitali set, then $`A` is not measurable.

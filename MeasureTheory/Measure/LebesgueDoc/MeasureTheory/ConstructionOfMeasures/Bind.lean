@@ -60,15 +60,17 @@ MTI.Measure.measurable_coe
 To prove that a map $`\mu : X \to \Measure(Y)` is measurable, it suffices to show that
 for any measurable set $`A \subseteq Y`, the scalar-valued map
 $$`
-  x \mapsto \mu(x)(A)`
+  x \mapsto \mu_x (A)`
 is measurable.
+Here, we write $`\mu_x` for $`\mu(x)`.
 :::locale "ja"
 写像 $`\mu : X \to \Measure(Y)` が可測であることを示すには、任意の可測集合
 $`A \subseteq Y` に対してスカラー値写像
 $$`
-  x \mapsto \mu(x)(A)
+  x \mapsto \mu_x (A)
 `
 が可測であることを示せば十分である。
+ここで、$`\mu_x` は $`\mu(x)` を表す。
 :::
 ::::
 :::::

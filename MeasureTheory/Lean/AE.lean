@@ -46,7 +46,9 @@ theorem lintegral_mono_ae {f g : X → ℝ≥0∞} (hfg : ∀ᵐ x ∂μ, f x �
   let ⟨t, hts, ht, ht0⟩ := exists_measurable_superset_of_null hfg
   have h_ae_not_mem : ∀ᵐ x ∂μ, x ∉ t := by simpa [ae_iff] using ht0
   rw [lintegral, lintegral]
-  refine iSup₂_le fun s hsf ↦ le_iSup₂_of_le (s.restrict tᶜ) ?_ ?_
+  refine iSup₂_le fun s hsf ↦ ?_
+  let sr := SimpleFunc.restrict s tᶜ ht.compl
+  refine le_iSup₂_of_le sr ?_ ?_
   · intro x
     by_cases hx : x ∈ t
     · rw [SimpleFunc.restrict_apply _ ht.compl,
@@ -56,11 +58,11 @@ theorem lintegral_mono_ae {f g : X → ℝ≥0∞} (hfg : ∀ᵐ x ∂μ, f x �
         exact le_trans (hsf x) (by_contra fun hxfg ↦ hx (hts hxfg))
       rw [SimpleFunc.restrict_apply _ ht.compl, indicator_of_mem hx]
       exact hsxg
-  · have h_restrict : ∀ᵐ x ∂μ, s x = s.restrict tᶜ x := by
+  · have h_restrict : ∀ᵐ x ∂μ, s x = sr x := by
       exact h_ae_not_mem.mono fun x hxt ↦ by
         rw [SimpleFunc.restrict_apply _ ht.compl, indicator_of_mem hxt]
     exact le_of_eq <| SimpleFunc.lintegral_eq_of_measure_preimage
-      (SimpleFunc.measure_preimage_singleton_congr_ae (μ := μ) s (s.restrict tᶜ) h_restrict)
+      (SimpleFunc.measure_preimage_singleton_congr_ae (μ := μ) s sr h_restrict)
 
 theorem lintegral_congr_ae {f g : X → ℝ≥0∞} (hfg : ∀ᵐ x ∂μ, f x = g x) :
     ∫⁻ x, f x ∂μ = ∫⁻ x, g x ∂μ := by

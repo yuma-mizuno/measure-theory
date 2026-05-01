@@ -81,8 +81,8 @@ theorem lintegral_eq_nnreal (f : ℝ → ℝ≥0∞) :
   · refine le_trans le_top (ge_of_eq <| (iSup_eq_top _).2 fun b hb ↦ ?_)
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * measure (g ⁻¹' {∞}) :=
       exists_nat_mul_gt h (ne_of_lt hb)
-    let ψ := (const n).restrict (g ⁻¹' {∞})
     have hs : MeasurableSet (g ⁻¹' {∞}) := g.measurableSet_fiber ∞
+    let ψ := SimpleFunc.restrict (const n) (g ⁻¹' {∞}) hs
     have hψ : ∀ x, ψ x ≤ f x := by
       intro x
       by_cases hx : x ∈ g ⁻¹' {∞}
@@ -172,7 +172,7 @@ theorem lintegral_iSup {f : ℕ → ℝ → ℝ≥0∞} (hf : ∀ n, Measurable 
     _ = ⨆ n, ∑ p ∈ rs.range, p * measure (rs ⁻¹' {p} ∩ {x | p ≤ f n x}) := by
       refine ENNReal.finsetSum_iSup_of_monotone fun p i j hij ↦ ?_
       exact mul_le_mul_right (measure_mono (mono p hij)) p
-    _ ≤ ⨆ n, (rs.restrict {x | rs x ≤ f n x}).lintegral := by
+    _ ≤ ⨆ n, (SimpleFunc.restrict rs {x | rs x ≤ f n x} (h_meas n)).lintegral := by
       gcongr with n
       rw [restrict_lintegral _ (h_meas n)]
       refine le_of_eq <| Finset.sum_congr rfl fun p _ ↦ ?_
@@ -183,10 +183,10 @@ theorem lintegral_iSup {f : ℕ → ℝ → ℝ≥0∞} (hf : ∀ n, Measurable 
     _ ≤ ⨆ n, ∫⁻ x, f n x := by
       refine iSup_le fun n ↦ ?_
       refine le_iSup_of_le n ?_
-      let t := rs.restrict {x | rs x ≤ f n x}
+      let t := SimpleFunc.restrict rs {x | rs x ≤ f n x} (h_meas n)
       have ht : ∀ x, t x ≤ f n x := by
         intro x
-        dsimp only [t]
+        dsimp [t]
         rw [restrict_apply _ (h_meas n)]
         by_cases hx : rs x ≤ f n x
         · simp [hx]
@@ -194,45 +194,47 @@ theorem lintegral_iSup {f : ℕ → ℝ → ℝ≥0∞} (hf : ∀ n, Measurable 
       exact (lintegral_eq_lintegral t).ge.trans (lintegral_mono ht)
 
 theorem lintegral_eq_iSup_eapprox_lintegral {f : ℝ → ℝ≥0∞} (hf : Measurable f) :
-    ∫⁻ x, f x = ⨆ n, (eapprox f n).lintegral := by
+    ∫⁻ x, f x = ⨆ n, (eapprox f hf n).lintegral := by
   calc
-    ∫⁻ x, f x = ∫⁻ x, ⨆ n, (eapprox f n : ℝ → ℝ≥0∞) x := by
+    ∫⁻ x, f x = ∫⁻ x, ⨆ n, (eapprox f hf n : ℝ → ℝ≥0∞) x := by
       apply lintegral_congr
       intro x
       exact (iSup_eapprox_apply hf x).symm
-    _ = ⨆ n, ∫⁻ x, (eapprox f n : ℝ → ℝ≥0∞) x := by
-      exact lintegral_iSup (fun n ↦ (eapprox f n).measurable)
-        (monotone_eapprox f)
-    _ = ⨆ n, (eapprox f n).lintegral := by
+    _ = ⨆ n, ∫⁻ x, (eapprox f hf n : ℝ → ℝ≥0∞) x := by
+      exact lintegral_iSup (fun n ↦ (eapprox f hf n).measurable)
+        (monotone_eapprox f hf)
+    _ = ⨆ n, (eapprox f hf n).lintegral := by
       refine iSup_congr fun n ↦ ?_
-      exact lintegral_eq_lintegral (eapprox f n)
+      exact lintegral_eq_lintegral (eapprox f hf n)
 
 theorem lintegral_const_mul {f : ℝ → ℝ≥0∞} (c : ℝ≥0∞) (hf : Measurable f) :
     ∫⁻ x, c * f x = c * ∫⁻ x, f x := by
   calc
     ∫⁻ x, c * f x =
-        ∫⁻ x, c * ⨆ n, (eapprox f n : ℝ → ℝ≥0∞) x := by
+        ∫⁻ x, c * ⨆ n, (eapprox f hf n : ℝ → ℝ≥0∞) x := by
       apply lintegral_congr
       intro x
       rw [iSup_eapprox_apply hf x]
-    _ = ∫⁻ x, ⨆ n, (const c * eapprox f n : SimpleFunc) x := by
+    _ = ∫⁻ x, ⨆ n, (const c * eapprox f hf n : SimpleFunc) x := by
       apply lintegral_congr
       intro x
       rw [ENNReal.mul_iSup]
       simp
-    _ = ⨆ n, ∫⁻ x, (const c * eapprox f n : SimpleFunc) x := by
+    _ = ⨆ n, ∫⁻ x, (const c * eapprox f hf n : SimpleFunc) x := by
       exact lintegral_iSup
-        (fun n ↦ (const c * eapprox f n).measurable)
+        (fun n ↦ (const c * eapprox f hf n).measurable)
         (by
           intro i j hij x
-          exact mul_le_mul_right (monotone_eapprox f hij x) c)
-    _ = ⨆ n, (const c * eapprox f n).lintegral := by
+          change c * eapprox f hf i x ≤ c * eapprox f hf j x
+          gcongr
+          exact monotone_eapprox f hf hij x)
+    _ = ⨆ n, (const c * eapprox f hf n).lintegral := by
       refine iSup_congr fun n ↦ ?_
-      exact lintegral_eq_lintegral (const c * eapprox f n)
-    _ = ⨆ n, c * (eapprox f n).lintegral := by
+      exact lintegral_eq_lintegral (const c * eapprox f hf n)
+    _ = ⨆ n, c * (eapprox f hf n).lintegral := by
       refine iSup_congr fun n ↦ ?_
       rw [const_mul_lintegral]
-    _ = c * ⨆ n, (eapprox f n).lintegral := by
+    _ = c * ⨆ n, (eapprox f hf n).lintegral := by
       rw [ENNReal.mul_iSup]
     _ = c * ∫⁻ x, f x := by
       rw [lintegral_eq_iSup_eapprox_lintegral hf]
@@ -243,42 +245,42 @@ theorem lintegral_add {f g : ℝ → ℝ≥0∞}
   calc
     ∫⁻ x, f x + g x =
         (∫⁻ x,
-          (⨆ n, (eapprox f n : ℝ → ℝ≥0∞) x) +
-            ⨆ n, (eapprox g n : ℝ → ℝ≥0∞) x) := by
+          (⨆ n, (eapprox f hf n : ℝ → ℝ≥0∞) x) +
+            ⨆ n, (eapprox g hg n : ℝ → ℝ≥0∞) x) := by
       apply lintegral_congr
       intro x
       simp only [iSup_eapprox_apply, hf, hg]
-    _ = (∫⁻ x, ⨆ n, (eapprox f n + eapprox g n : SimpleFunc) x) := by
+    _ = (∫⁻ x, ⨆ n, (eapprox f hf n + eapprox g hg n : SimpleFunc) x) := by
       apply lintegral_congr
       intro x
       rw [ENNReal.iSup_add_iSup_of_monotone]
       · rfl
       · intro i j hij
-        exact monotone_eapprox _ hij x
+        exact monotone_eapprox f hf hij x
       · intro i j hij
-        exact monotone_eapprox _ hij x
-    _ = ⨆ n, (eapprox f n).lintegral + (eapprox g n).lintegral := by
+        exact monotone_eapprox g hg hij x
+    _ = ⨆ n, (eapprox f hf n).lintegral + (eapprox g hg n).lintegral := by
       rw [lintegral_iSup]
       · refine iSup_congr fun n ↦ ?_
         calc
-          (∫⁻ x, (eapprox f n + eapprox g n : SimpleFunc) x) =
-              (eapprox f n + eapprox g n).lintegral := by
+          (∫⁻ x, (eapprox f hf n + eapprox g hg n : SimpleFunc) x) =
+              (eapprox f hf n + eapprox g hg n).lintegral := by
                 simpa [SimpleFunc.coe_add, Pi.add_apply] using
                   (lintegral_eq_lintegral
-                    (eapprox f n + eapprox g n))
-          _ = (eapprox f n).lintegral + (eapprox g n).lintegral := by
+                    (eapprox f hf n + eapprox g hg n))
+          _ = (eapprox f hf n).lintegral + (eapprox g hg n).lintegral := by
                 exact add_lintegral _ _
       · intro n
-        exact (eapprox f n + eapprox g n).measurable
+        exact (eapprox f hf n + eapprox g hg n).measurable
       · intro i j hij x
-        exact add_le_add (monotone_eapprox f hij x) (monotone_eapprox g hij x)
-    _ = (⨆ n, (eapprox f n).lintegral) +
-          ⨆ n, (eapprox g n).lintegral := by
+        exact add_le_add (monotone_eapprox f hf hij x) (monotone_eapprox g hg hij x)
+    _ = (⨆ n, (eapprox f hf n).lintegral) +
+          ⨆ n, (eapprox g hg n).lintegral := by
       refine (ENNReal.iSup_add_iSup_of_monotone ?_ ?_).symm
       · intro i j hij
-        exact lintegral_mono_fun (monotone_eapprox f hij)
+        exact lintegral_mono_fun (monotone_eapprox f hf hij)
       · intro i j hij
-        exact lintegral_mono_fun (monotone_eapprox g hij)
+        exact lintegral_mono_fun (monotone_eapprox g hg hij)
     _ = (∫⁻ x, f x) + (∫⁻ x, g x) := by
       rw [lintegral_eq_iSup_eapprox_lintegral hf, lintegral_eq_iSup_eapprox_lintegral hg]
 

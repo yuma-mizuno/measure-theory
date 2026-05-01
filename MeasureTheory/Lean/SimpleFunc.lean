@@ -244,27 +244,22 @@ theorem finset_sup_apply {ι : Type*} {f : ι → SimpleFunc X} (s : Finset ι) 
 
 section Restrict
 
-open scoped Classical in
 /-- Restriction of a simple function to a measurable set. -/
-def restrict (f : SimpleFunc X) (s : Set X) : SimpleFunc X :=
-  if hs : MeasurableSet s then piecewise s hs f 0 else 0
-
-theorem restrict_of_not_measurable {f : SimpleFunc X} {s : Set X} (hs : ¬ MeasurableSet s) :
-    restrict f s = 0 := by
-  simp [SimpleFunc.restrict, hs]
+def restrict (f : SimpleFunc X) (s : Set X) (hs : MeasurableSet s) : SimpleFunc X :=
+  piecewise s hs f 0
 
 @[simp]
 theorem coe_restrict (f : SimpleFunc X) {s : Set X} (hs : MeasurableSet s) :
-    ⇑(restrict f s) = Set.indicator s f := by
+    ⇑(restrict f s hs) = Set.indicator s f := by
   classical
-  rw [restrict, dif_pos hs, coe_piecewise, coe_zero, piecewise_eq_indicator]
+  rw [restrict, coe_piecewise, coe_zero, piecewise_eq_indicator]
 
 theorem restrict_apply (f : SimpleFunc X) {s : Set X} (hs : MeasurableSet s) (x : X) :
-    restrict f s x = Set.indicator s f x := by
+    restrict f s hs x = Set.indicator s f x := by
   simp [f.coe_restrict hs]
 
 theorem restrict_preimage_singleton (f : SimpleFunc X) {s : Set X} (hs : MeasurableSet s)
-    {r : ℝ≥0∞} (hr : r ≠ 0) : restrict f s ⁻¹' {r} = s ∩ f ⁻¹' {r} := by
+    {r : ℝ≥0∞} (hr : r ≠ 0) : restrict f s hs ⁻¹' {r} = s ∩ f ⁻¹' {r} := by
   ext x
   by_cases hx : x ∈ s <;> simp [hs, hx]; grind
 
@@ -281,69 +276,37 @@ theorem ennrealRatEmbed_encode (q : ℚ) :
   rw [ennrealRatEmbed, Encodable.encodek]
   rfl
 
-/-- Simple approximation of a measurable `ℝ≥0∞`-valued function. -/
-def approx (i : ℕ → ℝ≥0∞) (f : X → ℝ≥0∞) (n : ℕ) : SimpleFunc X :=
-  (Finset.range n).sup fun k ↦ restrict (const X (i k)) {x : X | i k ≤ f x}
-
-theorem approx_apply {i : ℕ → ℝ≥0∞} {f : X → ℝ≥0∞} {n : ℕ} (x : X) (hf : Measurable f) :
-    (approx i f n : SimpleFunc X) x =
-      (Finset.range n).sup fun k ↦ if i k ≤ f x then i k else 0 := by
-  dsimp [approx]
-  rw [finset_sup_apply]
-  congr with k
-  rw [restrict_apply]
-  · simp [indicator_apply]
-  · refine measurableSet_le measurable_const hf
-
-theorem monotone_approx (i : ℕ → ℝ≥0∞) (f : X → ℝ≥0∞) : Monotone (approx i f) := fun _ _ h ↦
-  Finset.sup_mono <| Finset.range_subset_range.2 h
-
-theorem iSup_approx_apply (i : ℕ → ℝ≥0∞) (f : X → ℝ≥0∞) (x : X) (hf : Measurable f) :
-    ⨆ n, approx i f n x = ⨆ (k) (_ : i k ≤ f x), i k := by
-  refine le_antisymm (iSup_le fun n ↦ ?_) (iSup_le fun k ↦ iSup_le fun hk ↦ ?_)
-  · rw [approx_apply x hf]
-    refine Finset.sup_le fun k _ ↦ ?_
-    split_ifs with hki
-    · exact le_iSup_of_le k (le_iSup (fun _ : i k ≤ f x ↦ i k) hki)
-    · exact bot_le
-  · refine le_iSup_of_le (k + 1) ?_
-    rw [approx_apply x hf]
-    have hk_mem : k ∈ Finset.range (k + 1) := Finset.mem_range.2 (Nat.lt_succ_self _)
-    refine le_trans ?_ (Finset.le_sup hk_mem)
-    rw [if_pos hk]
-
 /-- Approximation by nonnegative rational values. -/
-def eapprox (f : X → ℝ≥0∞) (n : ℕ) : SimpleFunc X :=
+def eapprox (f : X → ℝ≥0∞) (hf : Measurable f) (n : ℕ) : SimpleFunc X :=
   (Finset.range n).sup fun k ↦
-    restrict (const X (ennrealRatEmbed k)) {x : X | ennrealRatEmbed k ≤ f x}
+    restrict (const X (ennrealRatEmbed k)) {x : X | ennrealRatEmbed k ≤ f x} <| by
+      apply measurableSet_le measurable_const hf
 
 theorem eapprox_apply {f : X → ℝ≥0∞} {n : ℕ} (x : X) (hf : Measurable f) :
-    eapprox f n x =
+    eapprox f hf n x =
       (Finset.range n).sup fun k ↦
         if ennrealRatEmbed k ≤ f x then ennrealRatEmbed k else 0 := by
   dsimp [eapprox]
   rw [finset_sup_apply]
   congr with k
   rw [restrict_apply]
-  · simp [indicator_apply]
-  · refine measurableSet_le measurable_const hf
+  simp [indicator_apply]
 
-theorem eapprox_lt_top (f : X → ℝ≥0∞) (n : ℕ) (x : X) : eapprox f n x < ∞ := by
+theorem eapprox_lt_top (f : X → ℝ≥0∞) (hf : Measurable f) (n : ℕ) (x : X) :
+    eapprox f hf n x < ∞ := by
   classical
   simp only [eapprox, finset_sup_apply, restrict]
   rw [Finset.sup_lt_iff (α := ℝ≥0∞) WithTop.top_pos]
   intro b hb
-  split_ifs
-  · simp only [coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]
-    calc
-      { x : X | ennrealRatEmbed b ≤ f x }.indicator (fun _ ↦ ennrealRatEmbed b) x ≤
-          ennrealRatEmbed b :=
-        indicator_le_self _ _ x
-      _ < ∞ := ENNReal.coe_lt_top
-  · exact WithTop.top_pos
+  simp only [coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]
+  calc
+    { x : X | ennrealRatEmbed b ≤ f x }.indicator (fun _ ↦ ennrealRatEmbed b) x ≤
+        ennrealRatEmbed b :=
+      indicator_le_self _ _ x
+    _ < ∞ := ENNReal.coe_lt_top
 
 @[gcongr, mono]
-theorem monotone_eapprox (f : X → ℝ≥0∞) : Monotone (eapprox f) :=
+theorem monotone_eapprox (f : X → ℝ≥0∞) (hf : Measurable f) : Monotone (eapprox f hf) :=
   fun i j hij ↦ by
     apply Finset.sup_le
     intro k hk
@@ -351,10 +314,9 @@ theorem monotone_eapprox (f : X → ℝ≥0∞) : Monotone (eapprox f) :=
     apply Finset.le_sup_of_le (b := k)
     · refine Finset.mem_range.mpr (by grind)
     · apply le_refl
-  -- Finset.sup_mono (Finset.range_subset_range.mpr hij)
 
 theorem iSup_eapprox_apply {f : X → ℝ≥0∞} (hf : Measurable f) (x : X) :
-    ⨆ n, eapprox f n x = f x := by
+    ⨆ n, eapprox f hf n x = f x := by
   refine le_antisymm (iSup_le fun n ↦ ?_) ?_
   · rw [eapprox_apply x hf]
     refine Finset.sup_le fun k _ ↦ ?_
@@ -365,7 +327,7 @@ theorem iSup_eapprox_apply {f : X → ℝ≥0∞} (hf : Measurable f) (x : X) :
     intro h
     rcases ENNReal.lt_iff_exists_rat_btwn.1 h with ⟨q, _, hlt_q, hq_lt⟩
     have hq :
-        (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ n, eapprox f n x := by
+        (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ n, eapprox f hf n x := by
       refine le_iSup_of_le (Encodable.encode q + 1) ?_
       rw [eapprox_apply x hf]
       have hk_mem : Encodable.encode q ∈ Finset.range (Encodable.encode q + 1) :=
@@ -447,9 +409,9 @@ theorem lintegral_partition (f g : SimpleFunc X) (μ : Measure X) :
 
 open scoped Classical in
 theorem restrict_lintegral (f : SimpleFunc X) {s : Set X} (hs : MeasurableSet s) :
-    (f.restrict s).lintegral μ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) := by
+    (f.restrict s hs).lintegral μ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) := by
   calc
-    (f.restrict s).lintegral μ = ∑ r ∈ f.range, r * μ (f.restrict s ⁻¹' {r}) := by
+    (f.restrict s hs).lintegral μ = ∑ r ∈ f.range, r * μ (f.restrict s hs ⁻¹' {r}) := by
       refine lintegral_eq_of_subset _ fun x hx ↦
         if hxs : x ∈ s then fun _ ↦ by
           simp only [f.restrict_apply hs, indicator_of_mem hxs, mem_range_self]
@@ -460,7 +422,7 @@ theorem restrict_lintegral (f : SimpleFunc X) {s : Set X} (hs : MeasurableSet s)
         else by rw [restrict_preimage_singleton _ hs hb, inter_comm]
 
 theorem restrict_lintegral_eq_lintegral_restrict (f : SimpleFunc X) {s : Set X}
-    (hs : MeasurableSet s) : (f.restrict s).lintegral μ = f.lintegral (μ.restrict s) := by
+    (hs : MeasurableSet s) : (f.restrict s hs).lintegral μ = f.lintegral (μ.restrict s) := by
   rw [f.restrict_lintegral hs, f.lintegral_restrict]
 
 theorem const_lintegral (c : ℝ≥0∞) :
@@ -475,7 +437,7 @@ theorem const_lintegral (c : ℝ≥0∞) :
       rw [preimage_const_of_mem (mem_singleton c)]
 
 theorem restrict_const_lintegral (c : ℝ≥0∞) {s : Set X} (hs : MeasurableSet s) :
-    ((SimpleFunc.const X c).restrict s).lintegral μ = c * μ s := by
+    ((SimpleFunc.const X c).restrict s hs).lintegral μ = c * μ s := by
   rw [restrict_lintegral_eq_lintegral_restrict _ hs, const_lintegral,
     Measure.restrict_apply MeasurableSet.univ, univ_inter]
 
@@ -677,12 +639,12 @@ theorem Measurable.ennreal_induction
     ⦃f : X → ℝ≥0∞⦄ (hf : Measurable f) : motive f := by
   convert
     iSup
-      (fun n ↦ (SimpleFunc.eapprox f n).measurable)
-      (SimpleFunc.monotone_eapprox f) _
+      (fun n ↦ (SimpleFunc.eapprox f hf n).measurable)
+      (SimpleFunc.monotone_eapprox f hf) _
       using 2
   · rw [SimpleFunc.iSup_eapprox_apply hf]
   · intro n
     exact SimpleFunc.induction (fun c s hs ↦ indicator c hs)
-      (fun f g hfg hf hg ↦ add hfg f.measurable g.measurable hf hg) (SimpleFunc.eapprox f n)
+      (fun f g hfg hf hg ↦ add hfg f.measurable g.measurable hf hg) (SimpleFunc.eapprox f hf n)
 
 end MTI

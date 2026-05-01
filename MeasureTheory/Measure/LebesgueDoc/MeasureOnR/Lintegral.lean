@@ -47,7 +47,7 @@ MTI.Real.Measurable
 :::::lemmaBox
 ::::localized
 Fix an enumeration $`q : \mathbb{N} \to \mathbb{Q}_{\ge 0}` of the nonnegative rational numbers.
-For a function $`f : \mathbb{R} \to [0,\infty]` and $`n \in \mathbb{N}`, define
+For a measurable function $`f : \mathbb{R} \to [0,\infty]` and $`n \in \mathbb{N}`, define
 $`\approxFun_n f : \mathbb{R} \to [0,\infty]` by
 $$`
   (\approxFun_n f)(x)
@@ -57,11 +57,11 @@ Then the following hold:
 
 1. For any $`n`, the function $`\approxFun_n f` is simple.
 2. If $`i \le j`, then $`\approxFun_i f \le \approxFun_j f`.
-3. If $`f` is measurable, then for any $`x \in \mathbb{R}`,
+3. For any $`x \in \mathbb{R}`,
    $`\sup_{n \in \mathbb{N}} (\approxFun_n f)(x) = f(x)`.
 :::locale "ja"
 非負有理数の列挙 $`q : \mathbb{N} \to \mathbb{Q}_{\ge 0}` を固定する。
-関数 $`f : \mathbb{R} \to [0,\infty]` と $`n \in \mathbb{N}` に対して、
+可測関数 $`f : \mathbb{R} \to [0,\infty]` と $`n \in \mathbb{N}` に対して、
 $`\approxFun_n f : \mathbb{R} \to [0,\infty]` を
 $$`
   (\approxFun_n f)(x)
@@ -72,7 +72,7 @@ $$`
 
 1. 任意の $`n` に対して、$`\approxFun_n f` は単関数である。
 2. $`i \le j` ならば $`\approxFun_i f \le \approxFun_j f` である。
-3. $`f` が可測ならば、任意の $`x \in \mathbb{R}` に対して
+3. 任意の $`x \in \mathbb{R}` に対して
    $`\sup_{n \in \mathbb{N}} (\approxFun_n f)(x) = f(x)` である。
 :::
 ::::

@@ -230,31 +230,26 @@ theorem finset_sup_apply {ι : Type*} {f : ι → SimpleFunc} (s : Finset ι) (x
   intro a s _ ih
   rw [Finset.sup_insert, Finset.sup_insert, sup_apply, ih]
 
-open scoped Classical in
 /-- Restriction of a simple function to a measurable set. -/
-def restrict (f : SimpleFunc) (s : Set ℝ) : SimpleFunc :=
-  if hs : MeasurableSet s then piecewise s hs f 0 else 0
-
-theorem restrict_of_not_measurable {f : SimpleFunc} {s : Set ℝ} (hs : ¬ MeasurableSet s) :
-    restrict f s = 0 := by
-  simp [SimpleFunc.restrict, hs]
+def restrict (f : SimpleFunc) (s : Set ℝ) (hs : MeasurableSet s) : SimpleFunc :=
+  piecewise s hs f 0
 
 @[simp]
 theorem coe_restrict (f : SimpleFunc) {s : Set ℝ} (hs : MeasurableSet s) :
-    ⇑(restrict f s) = Set.indicator s f := by
+    ⇑(restrict f s hs) = Set.indicator s f := by
   classical
-  rw [restrict, dif_pos hs, coe_piecewise, coe_zero, piecewise_eq_indicator]
+  rw [restrict, coe_piecewise, coe_zero, piecewise_eq_indicator]
 
 theorem restrict_apply (f : SimpleFunc) {s : Set ℝ} (hs : MeasurableSet s) (x : ℝ) :
-    restrict f s x = Set.indicator s f x := by
+    restrict f s hs x = Set.indicator s f x := by
   simp [f.coe_restrict hs]
 
 theorem restrict_preimage_singleton (f : SimpleFunc) {s : Set ℝ} (hs : MeasurableSet s)
-    {r : ℝ≥0∞} (hr : r ≠ 0) : restrict f s ⁻¹' {r} = s ∩ f ⁻¹' {r} := by
+    {r : ℝ≥0∞} (hr : r ≠ 0) : restrict f s hs ⁻¹' {r} = s ∩ f ⁻¹' {r} := by
   ext x
   by_cases hx : x ∈ s
-  · simp [hs, hx]
-  · simp [hs, hx, hr, eq_comm]
+  · simp [ hx]
+  · simp [hx, hr, eq_comm]
 
 theorem nonempty_of_measure_ne_zero {s : Set ℝ} (hs : measure s ≠ 0) : s.Nonempty := by
   by_contra h
@@ -348,7 +343,8 @@ theorem map_lintegralIn (g : ℝ≥0∞ → ℝ≥0∞) (f : SimpleFunc) {s : Se
   classical
   simp only [lintegralIn, range_map]
   refine Finset.sum_image' _ fun a ha ↦ ?_
-  rw [map_preimage_singleton, ← f.sum_measure_preimage_singleton_in hs (f.range.filter fun x ↦ g x = g a),
+  rw [map_preimage_singleton,
+    ← f.sum_measure_preimage_singleton_in hs (f.range.filter fun x ↦ g x = g a),
     Finset.mul_sum]
   refine Finset.sum_congr ?_ ?_
   · congr
@@ -392,9 +388,9 @@ theorem lintegralIn_partition (f g : SimpleFunc) {s : Set ℝ} (hs : MeasurableS
             rw [lintegralIn]
 
 theorem restrict_lintegral (f : SimpleFunc) {s : Set ℝ} (hs : MeasurableSet s) :
-    (f.restrict s).lintegral = f.lintegralIn s := by
+    (f.restrict s hs).lintegral = f.lintegralIn s := by
   calc
-    (f.restrict s).lintegral = ∑ r ∈ f.range, r * measure (f.restrict s ⁻¹' {r}) := by
+    (f.restrict s hs).lintegral = ∑ r ∈ f.range, r * measure (f.restrict s hs ⁻¹' {r}) := by
       refine lintegral_eq_of_subset _ fun x hx ↦ ?_
       by_cases hxs : x ∈ s
       · intro _
@@ -418,7 +414,7 @@ theorem const_lintegral (c : ℝ≥0∞) :
   exact const_lintegralIn c MeasurableSet.univ
 
 theorem restrict_const_lintegral (c : ℝ≥0∞) {s : Set ℝ} (hs : MeasurableSet s) :
-    ((SimpleFunc.const c).restrict s).lintegral = c * measure s := by
+    ((SimpleFunc.const c).restrict s hs).lintegral = c * measure s := by
   rw [restrict_lintegral _ hs, const_lintegralIn _ hs]
 
 theorem const_add_lintegralIn (f : SimpleFunc) (c : ℝ≥0∞) {s : Set ℝ} (hs : MeasurableSet s) :

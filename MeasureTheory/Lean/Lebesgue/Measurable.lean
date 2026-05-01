@@ -89,23 +89,23 @@ theorem ennrealRatEmbed_encode (q : ℚ) :
   rfl
 
 /-- Rational-valued simple approximations of a measurable function. -/
-def eapprox (f : ℝ → ℝ≥0∞) (n : ℕ) : SimpleFunc :=
+def eapprox (f : ℝ → ℝ≥0∞) (hf : Measurable f) (n : ℕ) : SimpleFunc :=
   (Finset.range n).sup fun k ↦
     restrict (const (ennrealRatEmbed k)) {x : ℝ | ennrealRatEmbed k ≤ f x}
+      (hf (ennrealRatEmbed k))
 
 theorem eapprox_apply {f : ℝ → ℝ≥0∞} {n : ℕ} (x : ℝ) (hf : Measurable f) :
-    eapprox f n x =
+    eapprox f hf n x =
       (Finset.range n).sup fun k ↦
         if ennrealRatEmbed k ≤ f x then ennrealRatEmbed k else 0 := by
   rw [eapprox]
   rw [finset_sup_apply]
   congr with k
   rw [restrict_apply]
-  · simp [indicator_apply]
-  · exact hf _
+  simp [indicator_apply]
 
 @[gcongr, mono]
-theorem monotone_eapprox (f : ℝ → ℝ≥0∞) : Monotone (eapprox f) := by
+theorem monotone_eapprox (f : ℝ → ℝ≥0∞) (hf : Measurable f) : Monotone (eapprox f hf) := by
   intro i j hij
   apply Finset.sup_le
   intro k hk
@@ -115,7 +115,7 @@ theorem monotone_eapprox (f : ℝ → ℝ≥0∞) : Monotone (eapprox f) := by
   · exact le_rfl
 
 theorem iSup_eapprox_apply {f : ℝ → ℝ≥0∞} (hf : Measurable f) (x : ℝ) :
-    ⨆ n, eapprox f n x = f x := by
+    ⨆ n, eapprox f hf n x = f x := by
   refine le_antisymm (iSup_le fun n ↦ ?_) ?_
   · rw [eapprox_apply x hf]
     refine Finset.sup_le fun k _ ↦ ?_
@@ -126,7 +126,7 @@ theorem iSup_eapprox_apply {f : ℝ → ℝ≥0∞} (hf : Measurable f) (x : ℝ
     intro h
     rcases ENNReal.lt_iff_exists_rat_btwn.1 h with ⟨q, _, hlt_q, hq_lt⟩
     have hq :
-        (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ n, eapprox f n x := by
+        (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ n, eapprox f hf n x := by
       refine le_iSup_of_le (Encodable.encode q + 1) ?_
       rw [eapprox_apply x hf]
       have hk_mem : Encodable.encode q ∈ Finset.range (Encodable.encode q + 1) :=
@@ -179,20 +179,20 @@ theorem Measurable.add {f g : ℝ → ℝ≥0∞} (hf : Measurable f) (hg : Meas
     Measurable fun x ↦ f x + g x := by
   have heq :
       (fun x ↦ f x + g x) =
-        fun x ↦ ⨆ n, (eapprox f n + eapprox g n : SimpleFunc) x := by
+        fun x ↦ ⨆ n, (eapprox f hf n + eapprox g hg n : SimpleFunc) x := by
     funext x
     calc
-      f x + g x = (⨆ n, eapprox f n x) + ⨆ n, eapprox g n x := by
+      f x + g x = (⨆ n, eapprox f hf n x) + ⨆ n, eapprox g hg n x := by
         simp [iSup_eapprox_apply hf x, iSup_eapprox_apply hg x]
-      _ = ⨆ n, (eapprox f n + eapprox g n : SimpleFunc) x := by
+      _ = ⨆ n, (eapprox f hf n + eapprox g hg n : SimpleFunc) x := by
         rw [ENNReal.iSup_add_iSup_of_monotone]
         · simp
         · intro i j hij
-          exact monotone_eapprox _ hij x
+          exact monotone_eapprox _ _ hij x
         · intro i j hij
-          exact monotone_eapprox _ hij x
+          exact monotone_eapprox _ _ hij x
   rw [heq]
-  exact Measurable.iSup fun n ↦ (eapprox f n + eapprox g n).measurable
+  exact Measurable.iSup fun n ↦ (eapprox f hf n + eapprox g hg n).measurable
 
 theorem measurableSet_lt_fun {f g : ℝ → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet {x | f x < g x} := by
